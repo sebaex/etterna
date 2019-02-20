@@ -55,7 +55,9 @@ return Def.ActorFrame {
 			self:playcommand("On")
 		end,
 		SetStatusCommand = function(self, param)
-			self:settext(param.text)
+			if self:GetText() ~= param.text then
+				self:settext(param.text)
+			end
 		end
 	},
 	Def.BitmapText {

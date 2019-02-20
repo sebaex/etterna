@@ -96,7 +96,7 @@ chat.ScreenChangedMessageCommand = function(self)
 		self:visible(false)
 		show = false
 		typing = false
-		s:setInterval(
+		s:setTimeout(
 			function()
 				self:visible(false)
 			end,
@@ -383,6 +383,7 @@ function overTab(mx, my)
 	return nil, nil
 end
 
+local getMousePosition = getMousePosition
 function MPinput(event)
 	if (not show or not online) or isGameplay then
 		return false
@@ -393,7 +394,7 @@ function MPinput(event)
 			update = true
 		end
 		typing = false
-		local mx, my = INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY()
+		local mx, my = getMousePosition()
 		if isOver(minbar) then --hard mouse toggle -mina
 			minimised = not minimised
 			MESSAGEMAN:Broadcast("Minimise")

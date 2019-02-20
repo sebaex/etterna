@@ -63,63 +63,71 @@ local enabled = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).CBHighlight
 
 local alpha = 0.4
 
-
 local function laneHighlight()
 	local pn = PLAYER_1
-	local r = Def.ActorFrame {
+	local r =
+		Def.ActorFrame {
 		InitCommand = function(self)
 			cbContainer = self
 		end
 	}
 	local xpos = getNoteFieldPos(pn)
 	local width = style:GetWidth(pn)
-	local colWidth = width/cols
+	local colWidth = width / cols
 	local border = 4
-	
+
 	if not enabled then
 		return r
 	end
-	
-	for i=1,cols do
-		r[#r+1] = Def.Quad{
+
+	for i = 1, cols do
+		r[#r + 1] =
+			Def.Quad {
 			InitCommand = function(self)
 				self:zoomto(getNoteFieldScale(pn) * (arrowWidth - 4) * noteFieldWidth, SCREEN_HEIGHT)
 				self:valign(0)
-				
+
 				local reverse = GAMESTATE:GetPlayerState(pn):GetCurrentPlayerOptions():UsingReverse()
-				local receptor = reverse and THEME:GetMetric("Player", "ReceptorArrowsYStandard") or THEME:GetMetric("Player", "ReceptorArrowsYReverse")
+				local receptor =
+					reverse and THEME:GetMetric("Player", "ReceptorArrowsYStandard") or
+					THEME:GetMetric("Player", "ReceptorArrowsYReverse")
 
 				self:diffusealpha(alpha)
 				local thewidth
 				if noteFieldWidth >= 1 then
-					thewidth = math.abs(1-noteFieldWidth)
+					thewidth = math.abs(1 - noteFieldWidth)
 				else
 					thewidth = noteFieldWidth - 1
 				end
-				self:xy((xpos - (arrowWidth * (cols / 2) * getNoteFieldScale(pn)) + ((i - 1) * arrowWidth * getNoteFieldScale(pn)) +(getNoteFieldScale(pn) * arrowWidth / 2)) + (i-(cols/2)-(1/2))*colWidth*(thewidth),-receptor)
+				self:xy(
+					(xpos - (arrowWidth * (cols / 2) * getNoteFieldScale(pn)) + ((i - 1) * arrowWidth * getNoteFieldScale(pn)) +
+						(getNoteFieldScale(pn) * arrowWidth / 2)) +
+						(i - (cols / 2) - (1 / 2)) * colWidth * (thewidth),
+					-receptor
+				)
 				self:fadebottom(0.6):fadetop(0.6)
 				self:addx(notefieldX)
 				self:visible(false)
 			end,
-			JudgmentMessageCommand=function(self,params)
+			JudgmentMessageCommand = function(self, params)
 				local notes = params.Notes
-				local firstTrack = params.FirstTrack+1
+				local firstTrack = params.FirstTrack + 1
 				if params.Player == pn and params.TapNoteScore then
-					local enum  = Enum.Reverse(TapNoteScore)[params.TapNoteScore]
+					local enum = Enum.Reverse(TapNoteScore)[params.TapNoteScore]
 					if enum < judgeThreshold and enum > 3 and i == firstTrack then
 						self:stoptweening()
 						self:visible(true)
 						self:diffuse(byJudgment(params.TapNoteScore))
 						self:diffusealpha(alpha)
-						self:tween(0.25, "TweenType_Bezier",{0,0,0.5,0,1,1,1,1})
+						self:tween(0.25, "TweenType_Bezier", {0, 0, 0.5, 0, 1, 1, 1, 1})
 						self:diffusealpha(0)
 					end
 				end
 			end,
 			UpdateCommand = function(self)
 				noteFieldWidth = MovableValues.NotefieldWidth
-				self:zoomtowidth((colWidth-border) * noteFieldWidth)
-				self:addx((i-(cols/2)-(1/2))*colWidth * (noteFieldWidth - oldWidth))
+				self:zoomtowidth((colWidth - border) * noteFieldWidth)
+				self:addx((i - (cols / 2) - (1 / 2)) * colWidth * (noteFieldWidth - oldWidth))
 			end
 		}
 	end
@@ -173,7 +181,7 @@ if numPlayers == 1 then
 			self:zoomto(filterWidth * getNoteFieldScale(player) * noteFieldWidth, SCREEN_HEIGHT)
 		end
 	}
-	t[#t+1] = laneHighlight()
+	t[#t + 1] = laneHighlight()
 else
 	-- two players... a bit more complex.
 	if styleType == "TwoPlayersSharedSides" then

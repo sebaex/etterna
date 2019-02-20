@@ -192,7 +192,12 @@ function audioVisualizer:new(params)
             function()
                 local updater = frame.updater
                 local bars = frame.bars
-                local max = math.max(100.0, unpack(values, 2))
+                local max = 100
+                for _, v in ipairs(values) do
+                    if v > max then
+                        max = v
+                    end
+                end
                 for i = 1, #bars do
                     -- turn into linear scale
                     local x = math.min(values[i + 1] / max, 1)

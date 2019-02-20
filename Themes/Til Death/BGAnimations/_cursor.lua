@@ -42,22 +42,24 @@ t[#t + 1] =
 		self:xy(0, 0):zoomto(4, 4):rotationz(45)
 	end
 }
-
+local IsWindowed
+do
+	local getpref = PREFSMAN.GetPreference
+	IsWindowed = function()
+		getpref(PREFSMAN, "Windowed")
+	end
+end
+local cursorActor
 local function Update(self)
-	t.InitCommand = function(self)
-		self:SetUpdateFunction(Update)
-	end
 	--self:GetChild("MouseXY"):settextf("X:%5.2f Y:%5.2f W:%5.2f",INPUTFILTER:GetMouseX(),INPUTFILTER:GetMouseY(),INPUTFILTER:GetMouseWheel())
-	if not PREFSMAN:GetPreference("Windowed") then
-		self:GetChild("Cursor"):xy(INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY())
-		self:GetChild("Cursor"):visible(true)
-	else
-		self:GetChild("Cursor"):visible(false)
-	end
+
+	cursorActor:xy(INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY())
 	--self:GetChild("FullScreen"):settextf("FullScreen: %s",tostring(not PREFSMAN:GetPreference("Windowed")))
 end
-t.InitCommand = function(self)
+t.BeginCommand = function(self)
+	cursorActor = self:GetChild("Cursor")
 	self:SetUpdateFunction(Update)
+	self:SetUpdateFunctionInterval(1 / 20)
 end
 
 return t

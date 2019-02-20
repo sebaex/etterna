@@ -808,10 +808,14 @@ local BPM
 local a = GAMESTATE:GetPlayerState(PLAYER_1):GetSongPosition()
 local r = GAMESTATE:GetSongOptionsObject("ModsLevel_Current"):MusicRate() * 60
 local GetBPS = SongPosition.GetCurBPS
+local lastBPM = nil
 
 local function UpdateBPM(self)
-	local bpm = GetBPS(a) * r
-	settext(BPM, Round(bpm, 2))
+	local bpm = GetBPS(a)
+	if lastBPM ~= bpm then
+		lastBPM = bpm
+		settext(BPM, Round(bpm * r, 2))
+	end
 end
 
 t[#t + 1] =
@@ -820,7 +824,7 @@ t[#t + 1] =
 		BPM = self:GetChild("BPM")
 		if #GAMESTATE:GetCurrentSong():GetTimingData():GetBPMs() > 1 then -- dont bother updating for single bpm files
 			self:SetUpdateFunction(UpdateBPM)
-			self:SetUpdateRate(0.5)
+			self:SetUpdateFunctionInterval(0.5)
 		else
 			BPM:settextf("%5.2f", GetBPS(a) * r) -- i wasn't thinking when i did this, we don't need to avoid formatting for performance because we only call this once -mina
 		end

@@ -48,9 +48,13 @@ local www = 1366 * 0.8
 local hhh = SCREEN_HEIGHT * 0.8
 local rtzoom = 0.6
 
+local BGQframe
+local isOver = isOver
 local function dooting(self)
 	if self:IsVisible() then
-		self:GetChild("BGQframe"):queuecommand("dooting")
+		if isOver(BGQframe) then
+			self:x(SCREEN_WIDTH - self:GetX())
+		end
 	end
 end
 
@@ -58,32 +62,32 @@ local dltzoom = 0.5
 -- download queue/progress
 t[#t + 1] =
 	Def.ActorFrame {
-	PausingDownloadsMessageCommand=function(self)
+	PausingDownloadsMessageCommand = function(self)
+		self:SetUpdateFunction(nil)
 		self:visible(false)
 	end,
-	ResumingDownloadsMessageCommand=function(self)
+	ResumingDownloadsMessageCommand = function(self)
+		self:SetUpdateFunction(nil)
 		self:visible(false)
 	end,
 	AllDownloadsCompletedMessageCommand = function(self)
+		self:SetUpdateFunction(nil)
 		self:visible(false)
 	end,
 	DLProgressAndQueueUpdateMessageCommand = function(self)
+		self:SetUpdateFunction(dooting)
 		self:visible(true)
 	end,
 	BeginCommand = function(self)
-		self:SetUpdateFunction(dooting)
+		self:SetUpdateFunctionInterval(0.25)
 		self:visible(false)
 		self:x(www / 8 + 10):y(SCREEN_TOP + hhh / 8 + 10)
 	end,
 	Def.Quad {
 		Name = "BGQframe",
 		InitCommand = function(self)
+			BGQframe = self
 			self:zoomto(www / 4, hhh / 4):diffuse(color("0.1,0.1,0.1,0.8"))
-		end,
-		dootingCommand = function(self)
-			if isOver(self) then
-				self:GetParent():x(SCREEN_WIDTH - self:GetParent():GetX())
-			end
 		end
 	},
 	Def.BitmapText {

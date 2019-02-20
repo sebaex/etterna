@@ -449,16 +449,16 @@ Screen::PassInputToLua(const InputEventPlus& input)
 }
 
 void
-Screen::SetTimeout(function<void()> f, float ms)
+Screen::SetTimeout(function<void()> f, float secs)
 {
-	delayedFunctions.emplace_back(make_pair(f, ms));
+	delayedFunctions.emplace_back(make_pair(f, secs));
 	return;
 }
 
 void
-Screen::SetInterval(function<void()> f, float ms, int id)
+Screen::SetInterval(function<void()> f, float secs, int id)
 {
-	delayedPeriodicFunctions.emplace_back(make_tuple(f, ms, ms, id));
+	delayedPeriodicFunctions.emplace_back(make_tuple(f, secs, secs, id));
 	return;
 }
 

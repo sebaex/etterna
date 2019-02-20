@@ -20,6 +20,10 @@ function checkColor(c)
 	return c
 end
 
+local getMousePosition = getMousePosition
+local checkColor = checkColor
+local fillNilTableFieldsFrom = fillNilTableFieldsFrom
+
 Widg.defaults.container = {
 	x = 0,
 	y = 0,
@@ -346,6 +350,7 @@ Widg.Button = function(params)
 			end
 			if params.highlight then
 				self:SetUpdateFunction(highlight)
+				self:SetUpdateFunctionInterval(1 / 30)
 			end
 			self.params = params
 			if not button.enabled then
@@ -644,8 +649,7 @@ Widg.SliderBase = function(params)
 	updateFunction = function(container)
 		if clicked then
 			if isOver(rectangle.actor) and INPUTFILTER:IsBeingPressed("Mouse 0", "Mouse") then
-				local mouse = getMousePosition()
-				t.value = getValue(mouse, params, container)
+				t.value = getValue({getMousePosition()}, params, container)
 				container.value = t.value
 				if params.onValueChange then
 					params.onValueChange(t.value)

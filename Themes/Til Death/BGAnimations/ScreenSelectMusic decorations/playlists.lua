@@ -1,24 +1,24 @@
 local function genericHighlight(self, highlight, base, clickaction)
 	local highlight = highlight or 0.6
 	local base = base or 1
-	self:SetUpdateFunction(function(self)
-		if self:IsVisible() then
-			self:RunCommandsOnChildren(
-				function(self)
-					if isOver(self) then
-						self:diffusealpha(highlight)
-					else
-						self:diffusealpha(base)
-					end
-				end
-				)
+	local f = function(self)
+		if isOver(self) then
+			self:diffusealpha(highlight)
+		else
+			self:diffusealpha(base)
+		end
+	end
+	self:SetUpdateFunction(
+		function(self)
+			if self:IsVisible() then
+				self:RunCommandsOnChildren(f)
 			end
 		end
 	)
-	self:SetUpdateFunctionInterval(0.025)
+	self:SetUpdateFunctionInterval(1 / 30)
 	if clickaction then
 		self:RunCommandsOnChildren(
-			function(self) 
+			function(self)
 				self:addcommand("LeftClickMessage", clickaction)
 			end
 		)
@@ -91,6 +91,9 @@ local allplaylists
 local currentplaylistpage = 1
 local numplaylistpages = 1
 local playlistsperpage = 10
+
+local PackMouseOverText
+local PackMouseOverQuad
 
 t[#t + 1] =
 	Def.Quad {
@@ -341,29 +344,39 @@ local function rankingLabel(i)
 					self:settext(((rankingPage - 1) * 25) + i + ((currentchartpage - 1) * chartsperplaylist) .. ".")
 				end
 			},
-			Def.ActorFrame {
-				Name = "PackMouseOver",
-				InitCommand = function(self)
-					self:SetUpdateFunction(function(self) 
-						if self:IsVisible() then
-							self:queuecommand("PackMouseover")
-						end 
-					end)
-				end,
-				Def.Quad {
-					InitCommand = function(self)
-						Name = "mouseover",
-						self:x(15):zoomto(180, 8):halign(0):diffusealpha(0)
-					end,
-					PackMouseoverMessageCommand = function(self)
-						if isOver(self) then
-							self:GetParent():queuecommand("DisplayPack")
+		Def.ActorFrame {
+			Name = "PackMouseOver",
+			InitCommand = function(self)
+				self:SetUpdateFunction(
+					function(self)
+						if self:IsVisible() and isOver(PackMouseOverQuad) and songlist[i + ((currentchartpage - 1) * chartsperplaylist)] then
+							PackMouseOverText:settext(songlist[i + ((currentchartpage - 1) * chartsperplaylist)]:GetGroupName())
+							PackMouseOverText:finishtweening()
+							PackMouseOverText:diffusealpha(1)
+							PackMouseOverText:linear(0.25)
+							PackMouseOverText:diffusealpha(0)
 						end
 					end
-				},
-				LoadFont("Common Large") .. {
+				)
+				self:SetUpdateFunctionInterval(1 / 30)
+			end,
+			Def.Quad {
+				Name = "mouseover",
+				InitCommand = function(self)
+					self:x(15):zoomto(180, 8):halign(0):diffusealpha(0)
+					PackMouseOverQuad = self
+				end,
+				PackMouseoverMessageCommand = function(self)
+					if isOver(self) then
+						self:GetParent():queuecommand("DisplayPack")
+					end
+				end
+			},
+			LoadFont("Common Large") ..
+				{
 					Name = "text",
 					InitCommand = function(self)
+						PackMouseOverText = self
 						self:xy(15, -10):maxwidth(580):halign(0):zoom(fontScale)
 					end,
 					DisplayPackCommand = function(self)
@@ -374,9 +387,9 @@ local function rankingLabel(i)
 							self:linear(0.25)
 							self:diffusealpha(0)
 						end
-					end	
+					end
 				}
-			},
+		},
 		LoadFont("Common Large") ..
 			{
 				InitCommand = function(self)
@@ -482,8 +495,8 @@ r[#r + 1] =
 			end,
 			DisplaySinglePlaylistMessageCommand = function(self)
 				self:visible(true)
-			end
-			,MouseLeftClickMessageCommand = function(self)
+			end,
+			MouseLeftClickMessageCommand = function(self)
 				if isOver(self) and currentchartpage < numplaylistpages and singleplaylistactive then
 					currentchartpage = currentchartpage + 1
 					MESSAGEMAN:Broadcast("DisplaySinglePlaylist")
@@ -559,7 +572,7 @@ local function PlaylistTitleDisplayButton(i)
 					end
 				end
 			}
-		}
+	}
 	return o
 end
 

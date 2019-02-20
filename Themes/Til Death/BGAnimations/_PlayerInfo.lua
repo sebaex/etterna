@@ -21,21 +21,21 @@ local setnewdisplayname = function(answer)
 	MESSAGEMAN:Broadcast("ProfileRenamed", {doot = answer})
 end
 
+local refreshbutton
+local loginlogout
+local avatarImageActor
+
+local function highlightIfOver(self)
+	self:diffusealpha(isOver(self) and 0.6 or 1)
+end
+
 local function highlight(self)
-	self:GetChild("refreshbutton"):queuecommand("Highlight")
+	highlightIfOver(refreshbutton)
 end
 
 local function highlight2(self)
-	self:GetChild("refreshbutton"):queuecommand("Highlight")
-	self:GetChild("loginlogout"):queuecommand("Highlight")
-end
-
-local function highlightIfOver(self)
-	if isOver(self) then
-		self:diffusealpha(0.6)
-	else
-		self:diffusealpha(1)
-	end
+	highlightIfOver(refreshbutton)
+	highlightIfOver(loginlogout)
 end
 
 t[#t + 1] =
@@ -59,6 +59,8 @@ t[#t + 1] =
 	BeginCommand = function(self)
 		self:queuecommand("Set")
 		self:SetUpdateFunction(highlight)
+		self:SetUpdateFunctionInterval(1 / 30)
+		mainAvatarFrameActor = self
 	end,
 	SetCommand = function(self)
 		if profile == nil then
@@ -71,6 +73,7 @@ t[#t + 1] =
 		Name = "Image",
 		InitCommand = function(self)
 			self:visible(true):halign(0):valign(0):xy(AvatarX, AvatarY)
+			avatarImageActor = self
 		end,
 		BeginCommand = function(self)
 			self:queuecommand("ModifyAvatar")
@@ -116,6 +119,7 @@ t[#t + 1] =
 		{
 			Name = "loginlogout",
 			InitCommand = function(self)
+				loginlogout = self
 				self:xy(SCREEN_CENTER_X, AvatarY + 26):halign(0.5):zoom(0.5):diffuse(getMainColor("positive"))
 			end,
 			BeginCommand = function(self)
@@ -137,19 +141,13 @@ t[#t + 1] =
 			end,
 			LoginMessageCommand = function(self) --this seems a little clunky -mina
 				if SCREENMAN:GetTopScreen() and SCREENMAN:GetTopScreen():GetName() == "ScreenSelectMusic" then
-					self:settextf(
-						"%s",
-						"Click to Logout"
-					)
+					self:settextf("%s", "Click to Logout")
 				else
 					self:settextf("")
 				end
 			end,
 			OnlineUpdateMessageCommand = function(self)
 				self:queuecommand("Set")
-			end,
-			HighlightCommand=function(self)
-				highlightIfOver(self)
 			end
 		},
 	LoadFont("Common Normal") ..
@@ -170,10 +168,10 @@ t[#t + 1] =
 			LogOutMessageCommand = function(self)
 				if SCREENMAN:GetTopScreen():GetName() == "ScreenSelectMusic" then
 					self:settextf("")
-					self:GetParent():SetUpdateFunction(highlight2)
+					mainAvatarFrameActor:SetUpdateFunction(highlight2)
 				else
 					self:settextf("")
-					self:GetParent():SetUpdateFunction(highlight)
+					mainAvatarFrameActor:SetUpdateFunction(highlight)
 				end
 			end,
 			LoginMessageCommand = function(self) --this seems a little clunky -mina
@@ -184,7 +182,7 @@ t[#t + 1] =
 						DLMAN:GetSkillsetRating("Overall"),
 						DLMAN:GetSkillsetRank(ms.SkillSets[1])
 					)
-					self:GetParent():SetUpdateFunction(highlight2)
+					mainAvatarFrameActor:SetUpdateFunction(highlight2)
 				else
 					self:settextf(
 						"Logged in as %s (%5.2f: #%i)",
@@ -192,13 +190,13 @@ t[#t + 1] =
 						DLMAN:GetSkillsetRating("Overall"),
 						DLMAN:GetSkillsetRank(ms.SkillSets[1])
 					)
-					self:GetParent():SetUpdateFunction(highlight)
+					mainAvatarFrameActor:SetUpdateFunction(highlight)
 				end
 			end,
 			OnlineUpdateMessageCommand = function(self)
 				self:queuecommand("Set")
 			end,
-			HighlightCommand=function(self)
+			HighlightCommand = function(self)
 				highlightIfOver(self)
 			end
 		},
@@ -299,11 +297,12 @@ t[#t + 1] =
 				self:settext(GAMESTATE:GetEtternaVersion())
 			end
 		},
-	LoadFont("Common Normal") .. {
-		Name = "refreshbutton",
+	LoadFont("Common Normal") ..
+		{
+			Name = "refreshbutton",
 			InitCommand = function(self)
+				refreshbutton = self
 				self:xy(SCREEN_WIDTH - 5, AvatarY + 20):halign(1):zoom(0.35):diffuse(getMainColor("positive"))
-				
 			end,
 			BeginCommand = function(self)
 				self:queuecommand("Set")
@@ -311,10 +310,7 @@ t[#t + 1] =
 			SetCommand = function(self)
 				self:settextf("Refresh Songs")
 			end,
-			HighlightCommand=function(self)
-				highlightIfOver(self)
-			end,
-			MouseLeftClickMessageCommand=function(self)
+			MouseLeftClickMessageCommand = function(self)
 				if isOver(self) then
 					SONGMAN:DifferentialReload()
 				end
@@ -338,16 +334,14 @@ t[#t + 1] =
 }
 
 local function Update(self)
-	t.InitCommand = function(self)
-		self:SetUpdateFunction(Update)
-	end
 	if getAvatarUpdateStatus() then
-		self:GetChild("Avatar" .. PLAYER_1):GetChild("Image"):queuecommand("ModifyAvatar")
+		avatarImageActor:queuecommand("ModifyAvatar")
 		setAvatarUpdateStatus(PLAYER_1, false)
 	end
 end
 t.InitCommand = function(self)
 	self:SetUpdateFunction(Update)
+	self:SetUpdateFunctionInterval(1 / 20)
 end
 
 return t

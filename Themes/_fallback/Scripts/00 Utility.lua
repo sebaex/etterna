@@ -9,8 +9,9 @@ function get43size(size4_3)
 end
 
 function getMousePosition()
-	return {x = INPUTFILTER:GetMouseX(), y = INPUTFILTER:GetMouseY()}
+	return INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY()
 end
+local getMousePosition = getMousePosition
 
 function capWideScale(AR4_3, AR16_9)
 	if AR4_3 < AR16_9 then
@@ -53,8 +54,8 @@ end
 -- @tparam actor element the actor
 -- @treturn bool true if the mouse is over the actor
 function isOver(element)
-	local mouse = getMousePosition()
-	return element:IsOver(mouse.x, mouse.y)
+	local mx, my = getMousePosition()
+	return element:IsOver(mx, my)
 end
 
 --- returns true if the table contains the key.

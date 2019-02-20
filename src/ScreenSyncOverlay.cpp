@@ -34,6 +34,10 @@ ScreenSyncOverlay::Init()
 	previousGameplayState = true;
 
 	Update(0);
+
+	SetInterval([this]() {
+		this->UpdateText();
+	}, 5, -1);
 }
 
 void
@@ -53,8 +57,6 @@ ScreenSyncOverlay::Update(float fDeltaTime)
 	}
 
 	Screen::Update(fDeltaTime);
-
-	UpdateText();
 }
 
 bool g_bShowAutoplay = true;

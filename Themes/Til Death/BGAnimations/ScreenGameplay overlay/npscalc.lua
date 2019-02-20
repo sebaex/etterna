@@ -13,6 +13,7 @@ local enabled = {
 	}
 }
 
+local pn = PLAYER_1
 local debug = false
 local countNotesSeparately = GAMESTATE:CountNotesSeparately()
 -- Generally, a smaller window will adapt faster, but a larger window will have a more stable value.
@@ -111,6 +112,8 @@ local peakNPS = {
 	PlayerNumber_P2 = 0
 }
 
+local NPSDisplayText
+
 ---------------
 -- Functions --
 ---------------
@@ -157,46 +160,41 @@ end
 
 -- This is an update function that is being called every frame while this is loaded.
 local function Update(self)
-	self.InitCommand = function(self)
-		self:SetUpdateFunction(Update)
-	end
+	pn = PLAYER_1
+	if enabled.NPSDisplay[pn] or enabled.NPSGraph[pn] then
+		-- We want to constantly check for old notes to remove and update the NPS counter text.
+		removeNote(pn)
 
-	for _, pn in pairs(GAMESTATE:GetEnabledPlayers()) do
-		if enabled.NPSDisplay[pn] or enabled.NPSGraph[pn] then
-			-- We want to constantly check for old notes to remove and update the NPS counter text.
-			removeNote(pn)
+		curNPS = getCurNPS(pn)
 
-			curNPS = getCurNPS(pn)
-
-			-- Update peak nps. Only start updating after enough time has passed.
-			if GAMESTATE:GetSongPosition():GetMusicSeconds() > npsWindow[pn] then
-				peakNPS[pn] = math.max(peakNPS[pn], curNPS)
+		-- Update peak nps. Only start updating after enough time has passed.
+		if GAMESTATE:GetSongPosition():GetMusicSeconds() > npsWindow[pn] then
+			peakNPS[pn] = math.max(peakNPS[pn], curNPS)
+		end
+		-- the actor which called this update function passes itself down as "self".
+		-- we then have "self" look for the child named "Text" which you can see down below.
+		-- Then the settext function is called (or settextf for formatted ones) to set the text of the child "Text"
+		-- every time this function is called.
+		-- We don't display the decimal values due to lack of precision from having a relatively small time window.
+		if enabled.NPSDisplay[pn] then
+			if debug then
+				NPSDisplayText:settextf(
+					"%0.1f NPS (Peak %0.1f)\n%0.1fs Window\n%d notes in table\nDynamic Window:%s",
+					curNPS,
+					peakNPS[pn],
+					npsWindow[pn],
+					noteSum[pn],
+					tostring(dynamicWindow)
+				)
+			else
+				NPSDisplayText:settextf("%0.0f NPS (Peak %0.0f)", curNPS, peakNPS[pn])
 			end
-			-- the actor which called this update function passes itself down as "self".
-			-- we then have "self" look for the child named "Text" which you can see down below.
-			-- Then the settext function is called (or settextf for formatted ones) to set the text of the child "Text"
-			-- every time this function is called.
-			-- We don't display the decimal values due to lack of precision from having a relatively small time window.
-			if enabled.NPSDisplay[pn] then
-				if debug then
-					self:GetChild("NPSDisplay"):GetChild("Text"):settextf(
-						"%0.1f NPS (Peak %0.1f)\n%0.1fs Window\n%d notes in table\nDynamic Window:%s",
-						curNPS,
-						peakNPS[pn],
-						npsWindow[pn],
-						noteSum[pn],
-						tostring(dynamicWindow)
-					)
-				else
-					self:GetChild("NPSDisplay"):GetChild("Text"):settextf("%0.0f NPS (Peak %0.0f)", curNPS, peakNPS[pn])
-				end
-			end
-			-- update the window size.
-			-- This isn't needed at all but it helps the counter
-			-- adapt quickly to high-nps bursts.
-			if dynamicWindow then
-				npsWindow[pn] = clamp(15 / math.sqrt(getCurNPS(pn)), 1, maxWindow)
-			end
+		end
+		-- update the window size.
+		-- This isn't needed at all but it helps the counter
+		-- adapt quickly to high-nps bursts.
+		if dynamicWindow then
+			npsWindow[pn] = clamp(15 / math.sqrt(getCurNPS(pn)), 1, maxWindow)
 		end
 	end
 end
@@ -221,40 +219,42 @@ local function npsDisplay(pn)
 				setBorderToText(self:GetChild("Border"), self:GetChild("Text"))
 			end
 		end,
+		MovableBorder(100, 200, 1, 0, 0),
 		-- Whenever a MessageCommand is broadcasted,
 		-- a table contanining parameters can also be passed along.
-		JudgmentMessageCommand = function(self, params)
-			local notes = params.Notes -- this is just one of those parameters.
+		JudgmentMessageCommand = enabled.NPSDisplay[pn] and
+			function(self, params)
+				local notes = params.Notes -- this is just one of those parameters.
 
-			local chordsize = 0
+				local chordsize = 0
 
-			if params.Player == pn then
-				if params.Type == "Tap" then
-					-- The notes parameter contains a table where the table indices
-					-- correspond to the columns in game.
-					-- The items in the table either contains a TapNote object (if there is a note)
-					-- or be simply nil (if there are no notes)
+				if params.Player == pn then
+					if params.Type == "Tap" then
+						-- The notes parameter contains a table where the table indices
+						-- correspond to the columns in game.
+						-- The items in the table either contains a TapNote object (if there is a note)
+						-- or be simply nil (if there are no notes)
 
-					-- Since we only want to count the number of notes in a chord,
-					-- we just iterate over the table and count the ones that aren't nil.
-					-- Set chordsize to 1 if notes are counted separately.
-					if GAMESTATE:GetCurrentGame():CountNotesSeparately() then
-						chordsize = 1
-					else
-						for i = 1, GAMESTATE:GetCurrentStyle():ColumnsPerPlayer() do
-							if notes ~= nil and notes[i] ~= nil then
-								chordsize = chordsize + 1
+						-- Since we only want to count the number of notes in a chord,
+						-- we just iterate over the table and count the ones that aren't nil.
+						-- Set chordsize to 1 if notes are counted separately.
+						if GAMESTATE:GetCurrentGame():CountNotesSeparately() then
+							chordsize = 1
+						else
+							for i = 1, GAMESTATE:GetCurrentStyle():ColumnsPerPlayer() do
+								if notes ~= nil and notes[i] ~= nil then
+									chordsize = chordsize + 1
+								end
 							end
 						end
-					end
 
-					-- add the note to noteTable
-					addNote(pn, GetTimeSinceStart(), chordsize)
-					lastJudgment[pn] = params.TapNoteScore
+						-- add the note to noteTable
+						addNote(pn, GetTimeSinceStart(), chordsize)
+						lastJudgment[pn] = params.TapNoteScore
+					end
 				end
-			end
-		end,
-		MovableBorder(100, 200, 1, 0, 0),
+			end or
+			nil
 	}
 	-- the text that will be updated by the update function.
 	if enabled.NPSDisplay[pn] then
@@ -264,6 +264,7 @@ local function npsDisplay(pn)
 				Name = "Text", -- sets the name of this actor as "Text". this is a child of the actor "t".
 				InitCommand = function(self)
 					self:halign(0):valign(0):settext("0 NPS (Peak 0.0)")
+					NPSDisplayText = self
 				end
 			}
 	end
@@ -280,7 +281,9 @@ local function npsGraph(pn)
 		Def.ActorFrame {
 		Name = "NPSGraph",
 		InitCommand = function(self)
-			self:xy(MovableValues.NPSGraphX, MovableValues.NPSGraphY):zoomtoheight(MovableValues.NPSGraphHeight):zoomtowidth(MovableValues.NPSGraphWidth)
+			self:xy(MovableValues.NPSGraphX, MovableValues.NPSGraphY):zoomtoheight(MovableValues.NPSGraphHeight):zoomtowidth(
+				MovableValues.NPSGraphWidth
+			)
 			Movable.DeviceButton_i.element = self
 			Movable.DeviceButton_o.element = self
 			if allowedCustomization then
@@ -290,7 +293,7 @@ local function npsGraph(pn)
 				Movable.DeviceButton_o.condition = enabled.NPSGraph.PlayerNumber_P1
 				setBorderAlignment(self:GetChild("Border"), 0, 0)
 			end
-		end,
+		end
 	}
 	local verts = {
 		{{0, 0, 0}, Color.White}
@@ -375,10 +378,12 @@ end
 local t =
 	Def.ActorFrame {
 	OnCommand = function(self)
-		if enabled.NPSDisplay[PLAYER_1] or enabled.NPSDisplay[PLAYER_2] or enabled.NPSGraph[PLAYER_1] or
+		if
+			enabled.NPSDisplay[PLAYER_1] or enabled.NPSDisplay[PLAYER_2] or enabled.NPSGraph[PLAYER_1] or
 				enabled.NPSGraph[PLAYER_2]
 		 then
 			self:SetUpdateFunction(Update)
+			self:SetUpdateFunctionInterval(maxWindow)
 		end
 	end
 }

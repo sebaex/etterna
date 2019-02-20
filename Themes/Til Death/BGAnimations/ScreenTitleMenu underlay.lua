@@ -8,7 +8,13 @@ local function input(event) -- for update button
 	end
 	return false
 end
-
+--[[
+if not QWEIQHWI then
+	package.path = "C:\\Proyectos\\Etterna\\etterna\\lualibs\\?.lua;" .. package.path
+	require("jit.p").start(options, output)
+	QWEIQHWI = true
+end
+]]
 local t =
 	Def.ActorFrame {
 	OnCommand = function(self)
@@ -30,7 +36,7 @@ t[#t + 1] =
 --Right gray rectangle
 t[#t + 1] =
 	Def.Quad {
-	InitCommand = function(self)
+	BeginCommand = function(self)
 		self:xy(250, 0):halign(0):valign(0):zoomto(1000, 900):diffuse(getTitleColor("BG_Right")):diffusealpha(1)
 	end
 }
