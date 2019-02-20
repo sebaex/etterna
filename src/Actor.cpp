@@ -2835,6 +2835,590 @@ class LunaActor : public Luna<Actor>
 LUA_REGISTER_INSTANCED_BASE_CLASS(Actor)
 // lua end
 
+
+extern "C" {
+	void ActorSetName(void* a, const char* x) {
+		((Actor*)a)->SetName(x);
+	}
+	void ActorSetX(void* a, float x) {
+		((Actor*)a)->SetX(x);
+	}
+	void ActorSetY(void* a, float x) {
+		((Actor*)a)->SetY(x);
+	}
+	void ActorSleep(void* a, float x) {
+		((Actor*)a)->Sleep(x);
+	}
+	void ActorLinear(void* a, float x) {
+		((Actor*)a)->BeginTweening(x, TWEEN_LINEAR);
+	}
+	void ActorAccelerate(void* a, float x) {
+		((Actor*)a)->BeginTweening(x, TWEEN_ACCELERATE);
+	}
+	void ActorDecelerate(void* a, float x) {
+		((Actor*)a)->BeginTweening(x, TWEEN_DECELERATE);
+	}
+	void ActorSpring(void* a, float x) {
+		((Actor*)a)->BeginTweening(x, TWEEN_SPRING);
+	}
+	void ActorStopTweening(void* a) {
+		((Actor*)a)->StopTweening();
+	}
+	void ActorFinishTweening(void* a) {
+		((Actor*)a)->FinishTweening();
+	}
+	void ActorHurryTweening(void* a, float x) {
+		((Actor*)a)->HurryTweening(x);
+	}
+	/*
+	todo
+	static int tween(T* p, lua_State* L)
+	{
+		float fTime = FArg(1);
+		if (fTime < 0) {
+			LuaHelpers::ReportScriptErrorFmt(
+				"Lua: tween(%f): tween time must not be negative", fTime);
+			COMMON_RETURN_SELF;
+		}
+		ITween* pTween = ITween::CreateFromStack(L, 2);
+		if (pTween != nullptr) {
+			p->BeginTweening(fTime, pTween);
+		}
+		COMMON_RETURN_SELF;
+	}
+	*/
+	void ActorSetZ(void* a, float x) {
+		((Actor*)a)->SetZ(x);
+	}
+	void ActorSetXY(void* a, float x, float y) {
+		((Actor*)a)->SetXY(x, y);
+	}
+	void ActorAddX(void* a, float x) {
+		((Actor*)a)->AddX(x);
+	}
+	void ActorAddY(void* a, float x) {
+		((Actor*)a)->AddY(x);
+	}
+	void ActorAddZ(void* a, float x) {
+		((Actor*)a)->AddZ(x);
+	}
+	void ActorSetZoom(void* a, float x) {
+		((Actor*)a)->SetZoom(x);
+	}
+	void ActorSetZoomX(void* a, float x) {
+		((Actor*)a)->SetZoomX(x);
+	}
+	void ActorSetZoomY(void* a, float x) {
+		((Actor*)a)->SetZoomY(x);
+	}
+	void ActorSetZoomZ(void* a, float x) {
+		((Actor*)a)->SetZoomZ(x);
+	}
+	void ActorSetZoomTo(void* a, float x, float y) {
+		((Actor*)a)->ZoomTo(x, y);
+	}
+	void ActorZoomToWidth(void* a, float x) {
+		((Actor*)a)->ZoomToWidth(x);
+	}
+	void ActorZoomToHeight(void* a, float x) {
+		((Actor*)a)->ZoomToHeight(x);
+	}
+	void ActorSetWidth(void* a, float x) {
+		((Actor*)a)->SetWidth(x);
+	}
+	void ActorSetHeight(void* a, float x) {
+		((Actor*)a)->SetHeight(x);
+	}
+	void ActorSetSize(void* a, float x, float y) {
+		((Actor*)a)->SetWidth(x);
+		((Actor*)a)->SetHeight(y);
+	}
+	void ActorSetBaseAlpha(void* a, float x) {
+		((Actor*)a)->SetBaseAlpha(x);
+	}
+	void ActorSetBaseZoom(void* a, float x) {
+		((Actor*)a)->SetBaseZoom(x);
+	}
+	void ActorSetBaseZoomX(void* a, float x) {
+		((Actor*)a)->SetBaseZoomX(x);
+	}
+	void ActorSetBaseZoomY(void* a, float x) {
+		((Actor*)a)->SetBaseZoomY(x);
+	}
+	void ActorSetBaseZoomZ(void* a, float x) {
+		((Actor*)a)->SetBaseZoomZ(x);
+	}
+	void ActorStretchTo(void* a, float x, float y, float z, float h) {
+		((Actor*)a)->StretchTo(RectF(x,y,z,h));
+	}
+	void ActorSetCropLeft(void* a, float x) {
+		((Actor*)a)->SetCropLeft(x);
+	}
+	void ActorSetCropTop(void* a, float x) {
+		((Actor*)a)->SetCropTop(x);
+	}
+	void ActorSetCropRight(void* a, float x) {
+		((Actor*)a)->SetCropRight(x);
+	}
+	void ActorSetCropBottom(void* a, float x) {
+		((Actor*)a)->SetCropBottom(x);
+	}
+	void ActorSetFadeLeft(void* a, float x) {
+		((Actor*)a)->SetFadeLeft(x);
+	}
+	void ActorSetFadeTop(void* a, float x) {
+		((Actor*)a)->SetFadeTop(x);
+	}
+	void ActorSetFadeRight(void* a, float x) {
+		((Actor*)a)->SetFadeRight(x);
+	}
+	void ActorSetFadeBottom(void* a, float x) {
+		((Actor*)a)->SetFadeBottom(x);
+	}
+	void ActorSetDiffuse(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuse(c);
+	}
+	void ActorSetDiffuseUpperLeft(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseUpperLeft(c);
+	}
+	void ActorSetDiffuseUpperRight(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseUpperRight(c);
+	}
+	void ActorSetDiffuseLowerLeft(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseLowerLeft(c);
+	}
+	void ActorSetDiffuseLowerRight(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseLowerRight(c);
+	}
+	void ActorSetDiffuseLeftEdge(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseLeftEdge(c);
+	}
+	void ActorSetDiffuseRightEdge(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseRightEdge(c);
+	}
+	void ActorSetDiffuseTopEdge(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseTopEdge(c);
+	}
+	void ActorSetDiffuseBottomEdge(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseBottomEdge(c);
+	}
+	void ActorSetDiffuseAlpha(void* a, float c) {
+		((Actor*)a)->SetDiffuseAlpha(c);
+	}
+	void ActorSetDiffuseColor(void* a, RageColor c) {
+		((Actor*)a)->SetDiffuseColor(c);
+	}
+	void ActorSetGlow(void* a, RageColor c) {
+		((Actor*)a)->SetGlow(c);
+	}
+	void ActorSetAux(void* a, float c) {
+		((Actor*)a)->SetAux(c);
+	}
+	float ActorGetAux(void* a) {
+		return ((Actor*)a)->GetAux();
+	}
+	void ActorSetRotationX(void* a, float x) {
+		((Actor*)a)->SetRotationX(x);
+	}
+	void ActorSetRotationY(void* a, float x) {
+		((Actor*)a)->SetRotationY(x);
+	}
+	void ActorSetRotationZ(void* a, float x) {
+		((Actor*)a)->SetRotationZ(x);
+	}
+	void ActorAddRotationX(void* a, float x) {
+		((Actor*)a)->AddRotationX(x);
+	}
+	void ActorAddRotationY(void* a, float x) {
+		((Actor*)a)->AddRotationY(x);
+	}
+	void ActorAddRotationZ(void* a, float x) {
+		((Actor*)a)->AddRotationZ(x);
+	}
+	void ActorGetRotation(void* a, float* buffSizeThree) {
+		buffSizeThree[0] = ((Actor*)a)->GetRotationX();
+		buffSizeThree[1] = ((Actor*)a)->GetRotationY();
+		buffSizeThree[2] = ((Actor*)a)->GetRotationZ();
+	}
+	void ActorSetBaseRotationX(void* a, float x) {
+		((Actor*)a)->SetBaseRotationX(x);
+	}
+	void ActorSetBaseRotationY(void* a, float x) {
+		((Actor*)a)->SetBaseRotationY(x);
+	}
+	void ActorSetBaseRotationZ(void* a, float x) {
+		((Actor*)a)->SetBaseRotationZ(x);
+	}
+	void ActorSetSkewX(void* a, float x) {
+		((Actor*)a)->SetSkewX(x);
+	}
+	void ActorSetSkewY(void* a, float x) {
+		((Actor*)a)->SetSkewY(x);
+	}
+	void ActorHeading(void* a, float x) {
+		((Actor*)a)->AddRotationH(x);
+	}
+	void ActorPitch(void* a, float x) {
+		((Actor*)a)->AddRotationP(x);
+	}
+	void ActorRoll(void* a, float x) {
+		((Actor*)a)->AddRotationR(x);
+	}
+	void ActorSetShadowLength(void* a, float x) {
+		((Actor*)a)->SetShadowLength(x);
+	}
+	void ActorSetShadowLengthX(void* a, float x) {
+		((Actor*)a)->SetShadowLengthX(x);
+	}
+	void ActorSetShadowLengthY(void* a, float x) {
+		((Actor*)a)->SetShadowLengthY(x);
+	}
+	void ActorSetShadowColor(void* a, RageColor x) {
+		((Actor*)a)->SetShadowColor(x);
+	}
+	void Actorhalign(void* a, float x) {
+		((Actor*)a)->SetHorizAlign(x);
+	}
+	void Actorvalign(void* a, float x) {
+		((Actor*)a)->SetVertAlign(x);
+	}
+	void ActorSetVertAlign(void* a, float x) {
+		((Actor*)a)->SetVertAlign(x);
+	}
+	void ActorSetHorizAlign(void* a, float x) {
+		((Actor*)a)->SetHorizAlign(x);
+	}
+	void Actordiffuseblink(void* a) {
+		((Actor*)a)->SetEffectDiffuseBlink(
+			1.0f, RageColor(0.5f, 0.5f, 0.5f, 0.5f), RageColor(1, 1, 1, 1));
+	}
+	void Actordiffuseshift(void* a) {
+		((Actor*)a)->SetEffectDiffuseShift(
+			1.0f, RageColor(0, 0, 0, 1), RageColor(1, 1, 1, 1));
+	}
+	void Actordiffuseramp(void* a) {
+		((Actor*)a)->SetEffectDiffuseShift(
+			1.0f, RageColor(0, 0, 0, 1), RageColor(1, 1, 1, 1));
+	}
+	void Actorglowblink(void* a) {
+		((Actor*)a)->SetEffectDiffuseShift(
+			1.0f, RageColor(1, 1, 1, 0.2f), RageColor(1, 1, 1, 0.8f));
+	}
+	void Actorglowshift(void* a) {
+		((Actor*)a)->SetEffectDiffuseShift(
+			1.0f, RageColor(1, 1, 1, 0.2f), RageColor(1, 1, 1, 0.8f));
+	}
+	void Actorglowramp(void* a) {
+		((Actor*)a)->SetEffectDiffuseShift(
+			1.0f, RageColor(1, 1, 1, 0.2f), RageColor(1, 1, 1, 0.8f));
+	}
+	void Actorrainbow(void* a) {
+		((Actor*)a)->SetEffectRainbow(2.0f);
+	}
+	void Actorwag(void* a) {
+		((Actor*)a)->SetEffectWag(2.0f, RageVector3(0, 0, 20));
+	}
+	void Actorbounce(void* a) {
+		((Actor*)a)->SetEffectBounce(2.0f, RageVector3(0, 20, 0));
+	}
+	void Actorbob(void* a) {
+		((Actor*)a)->SetEffectBob(2.0f, RageVector3(0, 20, 0));
+	}
+	void Actorpulse(void* a) {
+		((Actor*)a)->SetEffectPulse(2.0f, 0.5f, 1.0f);
+	}
+	void Actorspin(void* a) {
+		((Actor*)a)->SetEffectSpin(RageVector3(0, 0, 180));
+	}
+	void Actorvibrate(void* a) {
+		((Actor*)a)->SetEffectVibrate(RageVector3(10, 10, 10));
+	}
+	void ActorStopEffect(void* a) {
+		((Actor*)a)->StopEffect();
+	}
+	void ActorSetEffectColor1(void* a, RageColor c) {
+		((Actor*)a)->SetEffectColor1(c);
+	}
+	void ActorSetEffectColor2(void* a, RageColor c) {
+		((Actor*)a)->SetEffectColor2(c);
+	}
+	void ActorSetEffectPeriod(void* a, float c) {
+		((Actor*)a)->SetEffectPeriod(c);
+	}
+	const char* ActorSetEffectTiming(void* a, float rth, float hah, float rtf, float haz, float haf) {
+		RString err;
+		((Actor*)a)->SetEffectTiming(rth, hah, rtf, haf, haz, err);
+		return err.c_str();
+	}
+	const char* ActorSetEffectHoldAtFull(void* a, float x) {
+		RString err;
+		((Actor*)a)->SetEffectHoldAtFull(x, err);
+		return err.c_str();
+	}
+	void ActorSetEffectOffset(void* a, float c) {
+		((Actor*)a)->SetEffectOffset(c);
+	}
+	void ActorSetEffectClockString(void* a, const char* c) {
+		((Actor*)a)->SetEffectClockString(RString(c));
+	}
+	void ActorSetEffectMagnitude(void* a, float x, float y, float z) {
+		((Actor*)a)->SetEffectMagnitude(RageVector3(x, y, z));
+	}
+	void ActorGetEffectMagnitude(void* a, float* buffSizeThree) {
+		RageVector3 v = ((Actor*)a)->GetEffectMagnitude();
+		buffSizeThree[0] = v[0];
+		buffSizeThree[1] = v[1];
+		buffSizeThree[2] = v[2];
+	}
+	void Actorset_tween_uses_effect_delta(void* a, float x) {
+		((Actor*)a)->set_tween_uses_effect_delta(x);
+	}
+	float Actorget_tween_uses_effect_delta(void* a) {
+		return ((Actor*)a)->get_tween_uses_effect_delta();
+	}
+	void ActorScaleToCover(void* a, float x, float y, float z, float h) {
+		((Actor*)a)->ScaleToCover(RectF(x, y, z, h));
+	}
+	void ActorScaleToFit(void* a, float x, float y, float z, float h) {
+		((Actor*)a)->ScaleToFitInside(RectF(x,y,z,h));
+	}
+	void ActorEnableAnimation(void* a, bool c) {
+		((Actor*)a)->EnableAnimation(c);
+	}
+	void ActorPlay(void* a) {
+		((Actor*)a)->EnableAnimation(true);
+	}
+	void ActorPause(void* a) {
+		((Actor*)a)->EnableAnimation(false);
+	}
+	void ActorSetTextureWrapping(void* a, bool c) {
+		((Actor*)a)->SetTextureWrapping(c);
+	}
+	void ActorSetState(void* a, float x) {
+		((Actor*)a)->SetState(x);
+	}
+	int ActorGetNumStates(void* a) {
+		return((Actor*)a)->GetNumStates();
+	}
+	void ActorSetTextureTranslate(void* a, float x, float y) {
+		((Actor*)a)->SetTextureTranslate(x, y);
+	}
+	void ActorSetTextureFiltering(void* a, bool c) {
+		((Actor*)a)->SetTextureFiltering(c);
+	}
+	/*
+	todo
+	static int blend(T* p, lua_State* L)
+	{
+		p->SetBlendMode(Enum::Check<BlendMode>(L, 1));
+		COMMON_RETURN_SELF;
+	}
+	*/
+	void ActorSetUseZBuffer(void* a, bool c) {
+		((Actor*)a)->SetUseZBuffer(c);
+	}
+	void ActorZTest(void* a, bool c) {
+		((Actor*)a)->SetZTestMode(c ? ZTEST_WRITE_ON_PASS : ZTEST_OFF);
+	}
+	/*
+	todo
+	static int ztestmode(T* p, lua_State* L)
+	{
+		p->SetZTestMode(Enum::Check<ZTestMode>(L, 1));
+		COMMON_RETURN_SELF;
+	}
+	*/
+	void ActorSetZWrite(void* a, bool c) {
+		((Actor*)a)->SetZWrite(c);
+	}
+	void ActorSetZBias(void* a, float c) {
+		((Actor*)a)->SetZBias(c);
+	}
+	void ActorSetClearZBuffer(void* a, bool c) {
+		((Actor*)a)->SetClearZBuffer(c);
+	}
+	void ActorBackfaceCull(void* a, bool c) {
+		((Actor*)a)->SetCullMode(c ? CULL_BACK : CULL_NONE);
+	}
+	/*
+	todo
+	static int cullmode(T* p, lua_State* L)
+	{
+		p->SetCullMode(Enum::Check<CullMode>(L, 1));
+		COMMON_RETURN_SELF;
+	}
+	*/
+	void ActorSetVisible(void* a, bool c) {
+		((Actor*)a)->SetVisible(c);
+	}
+	void ActorSetDrawOrder(void* a, float c) {
+		((Actor*)a)->SetDrawOrder(c);
+	}
+	void ActorQueueCommand(void* a, const char* c) {
+		((Actor*)a)->QueueCommand(RString(c));
+	}
+	void ActorQueueMessage(void* a, const char* c) {
+		((Actor*)a)->QueueMessage(RString(c));
+	}
+	float ActorGetX(void* a) {
+		return((Actor*)a)->GetX();
+	}
+	float ActorGetY(void* a) {
+		return((Actor*)a)->GetY();
+	}
+	float ActorGetZ(void* a) {
+		return((Actor*)a)->GetZ();
+	}
+	float ActorGetDestX(void* a) {
+		return((Actor*)a)->GetDestX();
+	}
+	float ActorGetDestY(void* a) {
+		return((Actor*)a)->GetDestY();
+	}
+	float ActorGetDestZ(void* a) {
+		return((Actor*)a)->GetDestZ();
+	}
+	float ActorGetWidth(void* a) {
+		return((Actor*)a)->GetUnzoomedWidth();
+	}
+	float ActorGetHeight(void* a) {
+		return((Actor*)a)->GetUnzoomedHeight();
+	}
+	float ActorGetZoomedWidth(void* a) {
+		return((Actor*)a)->GetZoomedWidth();
+	}
+	float ActorGetZoomedHeight(void* a) {
+		return((Actor*)a)->GetZoomedHeight();
+	}
+	float ActorGetZoom(void* a) {
+		return((Actor*)a)->GetZoom();
+	}
+	float ActorGetZoomX(void* a) {
+		return((Actor*)a)->GetZoomX();
+	}
+	float ActorGetZoomY(void* a) {
+		return((Actor*)a)->GetZoomY();
+	}
+	float ActorGetZoomZ(void* a) {
+		return((Actor*)a)->GetZoomZ();
+	}
+	float ActorGetBaseZoomX(void* a) {
+		return((Actor*)a)->GetZoomX();
+	}
+	float ActorGetBaseZoomY(void* a) {
+		return((Actor*)a)->GetZoomY();
+	}
+	float ActorGetBaseZoomZ(void* a) {
+		return((Actor*)a)->GetZoomZ();
+	}
+	float ActorGetBaseRotationX(void* a) {
+		return((Actor*)a)->GetRotationX();
+	}
+	float ActorGetBaseRotationY(void* a) {
+		return((Actor*)a)->GetRotationY();
+	}
+	float ActorGetBaseRotationZ(void* a) {
+		return((Actor*)a)->GetRotationZ();
+	}
+	float ActorGetSecsIntoEffect(void* a) {
+		return((Actor*)a)->GetSecsIntoEffect();
+	}
+	float ActorGetEffectDelta(void* a) {
+		return((Actor*)a)->GetEffectDelta();
+	}
+	/*
+	todo
+	DEFINE_METHOD(GetDiffuse, GetDiffuse())
+		DEFINE_METHOD(GetGlow, GetGlow())
+		static int GetDiffuseAlpha(T* p, lua_State* L)
+	{
+		lua_pushnumber(L, p->GetDiffuseAlpha());
+		return 1;
+	}
+	*/
+	bool ActorGetVisible(void* a) {
+		return((Actor*)a)->GetVisible();
+	}
+	float ActorGetHAlign(void* a) {
+		return((Actor*)a)->GetHorizAlign();
+	}
+	float ActorGetVAlign(void* a) {
+		return((Actor*)a)->GetVertAlign();
+	}
+	const char* ActorGetName(void* a) {
+		return ((Actor*)a)->GetName().c_str();
+	}
+
+	/*
+	todo
+	static int GetParent(T* p, lua_State* L)
+	{
+		Actor* pParent = p->GetParent();
+		if (pParent == nullptr)
+			lua_pushnil(L);
+		else
+			pParent->PushSelf(L);
+		return 1;
+	}
+	static int GetFakeParent(T* p, lua_State* L)
+	{
+		Actor* fake = p->GetFakeParent();
+		if (fake == nullptr) {
+			lua_pushnil(L);
+		}
+		else {
+			fake->PushSelf(L);
+		}
+		return 1;
+	}
+	*/
+	void ActorSetFakeParent(void* a, void* b) {
+		((Actor*)a)->SetFakeParent((Actor*) b);
+	}
+	/*
+	todo
+	static size_t get_state_index(T* p, lua_State* L, int stack_index)
+	{
+		// Lua is one indexed.
+		int i = IArg(stack_index) - 1;
+		const auto si = static_cast<size_t>(i);
+		if (i < 0 || si >= p->GetNumWrapperStates()) {
+			luaL_error(L, "%d is not a valid wrapper state index.", i + 1);
+		}
+		return si;
+	}
+	static int RemoveWrapperState(T* p, lua_State* L)
+	{
+		size_t si = get_state_index(p, L, 1);
+		p->RemoveWrapperState(si);
+		COMMON_RETURN_SELF;
+	}
+	todo
+	static int GetWrapperState(T* p, lua_State* L)
+	{
+		size_t si = get_state_index(p, L, 1);
+		p->GetWrapperState(si)->PushSelf(L);
+		return 1;
+	}
+	*/
+	void ActorDraw(void* a) {
+		LUA->YieldLua();
+		((Actor*)a)->Draw();
+		LUA->UnyieldLua();
+	}
+	void ActorSaveXY(void* a, float x, float y) {
+		FILTERMAN->savepos(((Actor*)a)->GetName(), x, y);
+	}
+	void ActorLoadXY(void* a) {
+		auto doot = FILTERMAN->loadpos(((Actor*)a)->GetName());
+		((Actor*)a)->SetX(static_cast<float>(doot.first));
+		((Actor*)a)->SetY(static_cast<float>(doot.second));
+	}
+	bool ActorIsOver(void* a, float x, float y) {
+		return ((Actor*)a)->IsOver(x, y);
+	}
+}
+
 /*
  * (c) 2001-2004 Chris Danford
  * All rights reserved.

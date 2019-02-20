@@ -152,6 +152,45 @@ class Sprite : public Actor
 	float m_fTexCoordVelocityY;
 };
 
+#if defined(_MSC_VER)
+//  Microsoft 
+#define ACTORSPRITE_CEXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+//  GCC
+#define ACTOR_CEXPORT __attribute__((visibility("default")))
+#else
+//  do nothing and hope for the best?
+#define ACTOR_CEXPORT
+#endif
+extern "C" {
+	ACTORSPRITE_CEXPORT void SpriteLoad(void* a, char* x);
+	ACTORSPRITE_CEXPORT void SpriteLoadBanner(void* a, char* x);
+	ACTORSPRITE_CEXPORT void SpriteLoadBackground(void* a, char* x);
+	ACTORSPRITE_CEXPORT void SpriteLoadFromCached(void* a, char* x, char* y);
+	ACTORSPRITE_CEXPORT void SpriteSetCustomTextureRect(void* a, float x, float y, float z, float h);
+	ACTORSPRITE_CEXPORT void SpriteSetCustomImageRect(void* a, float x, float y, float z, float h);
+	ACTORSPRITE_CEXPORT void SpriteSetCustomPosCoords(void* a, float* x);
+	ACTORSPRITE_CEXPORT void SpriteStopUsingCustomPosCoords(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetTexCoordVelocity(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT bool Spriteget_use_effect_clock_for_texcoords(void* a);
+	ACTORSPRITE_CEXPORT void Spriteset_use_effect_clock_for_texcoords(void* a, bool x);
+	ACTORSPRITE_CEXPORT void SpriteCropTo(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT void SpriteCropTo(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT void SpriteStretchTex(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT void SpriteAddImageCoords(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT void SpriteSetState(void* a, int x);
+	ACTORSPRITE_CEXPORT int SpriteGetState(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetStateProperties(void* a, Sprite::State* x, int n);
+	ACTORSPRITE_CEXPORT float SpriteGetAnimationLengthSeconds(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetSecondsIntoAnimation(void* a, float x);
+	ACTORSPRITE_CEXPORT void SpriteSetTexture(void* a, RageTexture* x);
+	ACTORSPRITE_CEXPORT RageTexture* SpriteGetTexture(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetEffectMode(void* a, EffectMode x);
+	ACTORSPRITE_CEXPORT int SpriteGetNumStates(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetAllStateDelays(void* a, float x);
+	ACTORSPRITE_CEXPORT bool SpriteGetDecodeMovie(void* a);
+	ACTORSPRITE_CEXPORT void SpriteSetDecodeMovie(void* a, bool x);
+}
 #endif
 
 /**

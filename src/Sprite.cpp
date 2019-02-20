@@ -1438,6 +1438,98 @@ class LunaSprite : public Luna<Sprite>
 LUA_REGISTER_DERIVED_CLASS(Sprite, Actor)
 // lua end
 
+extern "C" {
+	void SpriteLoad(void* a, char* x) {
+		 if( x == nullptr)
+			 ((Sprite*)a)->UnloadTexture();
+		 else
+			((Sprite*)a)->Load(RageTextureID(x));
+	}
+	void SpriteLoadBanner(void* a, char* x) {
+		TEXTUREMAN->DisableOddDimensionWarning();
+		((Sprite*)a)->Load(Sprite::SongBannerTexture(RageTextureID(x)));
+		TEXTUREMAN->EnableOddDimensionWarning();
+	}
+	void SpriteLoadBackground(void* a, char* x) {
+		TEXTUREMAN->DisableOddDimensionWarning();
+		((Sprite*)a)->Load(Sprite::SongBGTexture(RageTextureID(x)));
+		TEXTUREMAN->EnableOddDimensionWarning();
+	}
+	void ActorLoadFromCached(void* a, char* x, char* y) {
+		((Sprite*)a)->LoadFromCached(x, y);
+	}
+	void SpriteSetCustomTextureRect(void* a, float x, float y, float z, float h) {
+		((Sprite*)a)->SetCustomTextureRect(RectF(x,y,z,h));
+	}
+	void SpriteSetCustomImageRect(void* a, float x, float y, float z, float h) {
+		((Sprite*)a)->SetCustomImageRect(RectF(x, y, z, h));
+	}
+	void SpriteSetCustomPosCoords(void* a, float* x) {
+		((Sprite*)a)->SetCustomPosCoords(x);
+	}
+	void SpriteStopUsingCustomPosCoords(void* a) {
+		((Sprite*)a)->StopUsingCustomPosCoords();
+	}
+	void SpriteSetTexCoordVelocity(void* a, float x, float y) {
+		((Sprite*)a)->SetTexCoordVelocity(x, y);
+	}
+	bool Spriteget_use_effect_clock_for_texcoords(void* a) {
+		return ((Sprite*)a)->m_use_effect_clock_for_texcoords;
+	}
+	void Spriteset_use_effect_clock_for_texcoords(void* a, bool x) {
+		((Sprite*)a)->m_use_effect_clock_for_texcoords = x;
+	}
+	void SpriteScaleToClipped(void* a, float x, float y) {
+		((Sprite*)a)->ScaleToClipped(x, y);
+	}
+	void SpriteCropTo(void* a, float x, float y) {
+		((Sprite*)a)->CropTo(x, y);
+	}
+	void SpriteStretchTex(void* a, float x, float y) {
+		((Sprite*)a)->StretchTexCoords(x, y);
+	}
+	void SpriteAddImageCoords(void* a, float x, float y) {
+		((Sprite*)a)->AddImageCoords(x, y);
+	}
+	void SpriteSetState(void* a, int x) {
+		((Sprite*)a)->SetState(x);
+	}
+	int SpriteGetState(void* a) {
+		return ((Sprite*)a)->GetState();
+	}
+	void SpriteSetStateProperties(void* a, Sprite::State* x, int n) {
+		vector<Sprite::State> v;
+		v.assign(x, x + n);
+		((Sprite*)a)->SetStateProperties(v);
+	}
+	float SpriteGetAnimationLengthSeconds(void* a) {
+		return ((Sprite*)a)->GetAnimationLengthSeconds();
+	}
+	void SpriteSetSecondsIntoAnimation(void* a, float x) {
+		((Sprite*)a)->SetSecondsIntoAnimation(x);
+	}
+	void SpriteSetTexture(void* a, RageTexture* x) {
+		((Sprite*)a)->SetTexture(x);
+	}
+	RageTexture* SpriteGetTexture(void* a) {
+		return ((Sprite*)a)->GetTexture();
+	}
+	void SpriteSetEffectMode(void* a, EffectMode x) {
+		((Sprite*)a)->SetEffectMode(x);
+	}
+	int SpriteGetNumStates(void* a) {
+		return ((Sprite*)a)->GetNumStates();
+	}
+	void SpriteSetAllStateDelays(void* a, float x) {
+		((Sprite*)a)->SetAllStateDelays(x);
+	}
+	bool SpriteGetDecodeMovie(void* a) {
+		return ((Sprite*)a)->m_DecodeMovie;
+	}
+	void SpriteSetDecodeMovie(void* a, bool x) {
+		((Sprite*)a)->m_DecodeMovie = x;
+	}
+}
 /*
  * (c) 2001-2004 Chris Danford
  * All rights reserved.

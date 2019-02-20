@@ -6,6 +6,9 @@
 #include "LuaManager.h"
 class LuaReference;
 
+void
+GetGlobalActorTable(Lua* L);
+
 class LuaBinding
 {
   public:

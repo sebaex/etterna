@@ -924,6 +924,172 @@ class Actor : public MessageSubscriber
 	map<RString, apActorCommands> m_mapNameToCommands;
 };
 
+#if defined(_MSC_VER)
+//  Microsoft 
+#define ACTOR_CEXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+//  GCC
+#define ACTOR_CEXPORT __attribute__((visibility("default")))
+#else
+//  do nothing and hope for the best?
+#define ACTOR_CEXPORT
+#endif
+extern "C" {
+	ACTOR_CEXPORT void ActorSetName(void* a, const char* x);
+	ACTOR_CEXPORT void ActorSetX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetY(void* a, float x);
+	ACTOR_CEXPORT void ActorSleep(void* a, float x);
+	ACTOR_CEXPORT void ActorLinear(void* a, float x);
+	ACTOR_CEXPORT void ActorAccelerate(void* a, float x);
+	ACTOR_CEXPORT void ActorDecelerate(void* a, float x);
+	ACTOR_CEXPORT void ActorSpring(void* a, float x);
+	ACTOR_CEXPORT void ActorStopTweening(void* a);
+	ACTOR_CEXPORT void ActorFinishTweening(void* a);
+	ACTOR_CEXPORT void ActorHurryTweening(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZ(void* a, float x);
+	ACTOR_CEXPORT void ActorSetXY(void* a, float x, float y);
+	ACTOR_CEXPORT void ActorAddX(void* a, float x);
+	ACTOR_CEXPORT void ActorAddY(void* a, float x);
+	ACTOR_CEXPORT void ActorAddZ(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZoom(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZoomX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZoomY(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZoomZ(void* a, float x);
+	ACTOR_CEXPORT void ActorSetZoomTo(void* a, float x, float y);
+	ACTOR_CEXPORT void ActorZoomToWidth(void* a, float x);
+	ACTOR_CEXPORT void ActorZoomToHeight(void* a, float x);
+	ACTOR_CEXPORT void ActorSetWidth(void* a, float x);
+	ACTOR_CEXPORT void ActorSetHeight(void* a, float x);
+	ACTOR_CEXPORT void ActorSetSize(void* a, float x, float y);
+	ACTOR_CEXPORT void ActorSetBaseAlpha(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseZoom(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseZoomX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseZoomY(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseZoomZ(void* a, float x);
+	ACTOR_CEXPORT void ActorStretchTo(void* a, float x, float y, float z, float h);
+	ACTOR_CEXPORT void ActorSetCropLeft(void* a, float x);
+	ACTOR_CEXPORT void ActorSetCropTop(void* a, float x);
+	ACTOR_CEXPORT void ActorSetCropRight(void* a, float x);
+	ACTOR_CEXPORT void ActorSetCropBottom(void* a, float x);
+	ACTOR_CEXPORT void ActorSetFadeLeft(void* a, float x);
+	ACTOR_CEXPORT void ActorSetFadeTop(void* a, float x);
+	ACTOR_CEXPORT void ActorSetFadeRight(void* a, float x);
+	ACTOR_CEXPORT void ActorSetFadeBottom(void* a, float x);
+	ACTOR_CEXPORT void ActorSetDiffuse(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseUpperLeft(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseUpperRight(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseLowerLeft(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseLowerRight(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseLeftEdge(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseRightEdge(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseTopEdge(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseBottomEdge(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetDiffuseAlpha(void* a, float c);
+	ACTOR_CEXPORT void ActorSetDiffuseColor(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetGlow(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetAux(void* a, float c);
+	ACTOR_CEXPORT float ActorGetAux(void* a);
+	ACTOR_CEXPORT void ActorSetRotationX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetRotationY(void* a, float x);
+	ACTOR_CEXPORT void ActorSetRotationZ(void* a, float x);
+	ACTOR_CEXPORT void ActorAddRotationX(void* a, float x);
+	ACTOR_CEXPORT void ActorAddRotationY(void* a, float x);
+	ACTOR_CEXPORT void ActorAddRotationZ(void* a, float x);
+	ACTOR_CEXPORT void ActorGetRotation(void* a, float* buffSizeThree);
+	ACTOR_CEXPORT void ActorSetBaseRotationX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseRotationY(void* a, float x);
+	ACTOR_CEXPORT void ActorSetBaseRotationZ(void* a, float x);
+	ACTOR_CEXPORT void ActorSetSkewX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetSkewY(void* a, float x);
+	ACTOR_CEXPORT void ActorHeading(void* a, float x);
+	ACTOR_CEXPORT void ActorPitch(void* a, float x);
+	ACTOR_CEXPORT void ActorRoll(void* a, float x);
+	ACTOR_CEXPORT void ActorSetShadowLength(void* a, float x);
+	ACTOR_CEXPORT void ActorSetShadowLengthX(void* a, float x);
+	ACTOR_CEXPORT void ActorSetShadowLengthY(void* a, float x);
+	ACTOR_CEXPORT void ActorSetShadowColor(void* a, RageColor x);
+	ACTOR_CEXPORT void Actorhalign(void* a, float x);
+	ACTOR_CEXPORT void Actorvalign(void* a, float x);
+	ACTOR_CEXPORT void ActorSetVertAlign(void* a, float x);
+	ACTOR_CEXPORT void ActorSetHorizAlign(void* a, float x);
+	ACTOR_CEXPORT void Actordiffuseblink(void* a);
+	ACTOR_CEXPORT void Actordiffuseshift(void* a);
+	ACTOR_CEXPORT void Actordiffuseramp(void* a);
+	ACTOR_CEXPORT void Actorglowblink(void* a);
+	ACTOR_CEXPORT void Actorglowshift(void* a);
+	ACTOR_CEXPORT void Actorglowramp(void* a);
+	ACTOR_CEXPORT void Actorrainbow(void* a);
+	ACTOR_CEXPORT void Actorwag(void* a);
+	ACTOR_CEXPORT void Actorbounce(void* a);
+	ACTOR_CEXPORT void Actorbob(void* a);
+	ACTOR_CEXPORT void Actorpulse(void* a);
+	ACTOR_CEXPORT void Actorspin(void* a);
+	ACTOR_CEXPORT void Actorvibrate(void* a);
+	ACTOR_CEXPORT void ActorStopEffect(void* a);
+	ACTOR_CEXPORT void ActorSetEffectColor1(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetEffectColor2(void* a, RageColor c);
+	ACTOR_CEXPORT void ActorSetEffectPeriod(void* a, float c);
+	ACTOR_CEXPORT const char* ActorSetEffectTiming(void* a, float rth, float hah, float rtf, float haz, float haf);
+	ACTOR_CEXPORT const char* ActorSetEffectHoldAtFull(void* a, float x);
+	ACTOR_CEXPORT void ActorSetEffectOffset(void* a, float c);
+	ACTOR_CEXPORT void ActorSetEffectClockString(void* a, const char* c);
+	ACTOR_CEXPORT void ActorSetEffectMagnitude(void* a, float x, float y, float z);
+	ACTOR_CEXPORT void ActorGetEffectMagnitude(void* a, float* buffSizeThree);
+	ACTOR_CEXPORT void Actorset_tween_uses_effect_delta(void* a, float x);
+	ACTOR_CEXPORT float Actorget_tween_uses_effect_delta(void* a);
+	ACTOR_CEXPORT void ActorScaleToCover(void* a, float x, float y, float z, float h);
+	ACTOR_CEXPORT void ActorScaleToFit(void* a, float x, float y, float z, float h);
+	ACTOR_CEXPORT void ActorEnableAnimation(void* a, bool c);
+	ACTOR_CEXPORT void ActorPlay(void* a);
+	ACTOR_CEXPORT void ActorPause(void* a);
+	ACTOR_CEXPORT void ActorSetTextureWrapping(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetState(void* a, float x);
+	ACTOR_CEXPORT int ActorGetNumStates(void* a);
+	ACTOR_CEXPORT void ActorSetTextureTranslate(void* a, float x, float y);
+	ACTOR_CEXPORT void ActorSetTextureFiltering(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetUseZBuffer(void* a, bool c);
+	ACTOR_CEXPORT void ActorZTest(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetZWrite(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetZBias(void* a, float c);
+	ACTOR_CEXPORT void ActorSetClearZBuffer(void* a, bool c);
+	ACTOR_CEXPORT void ActorBackfaceCull(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetVisible(void* a, bool c);
+	ACTOR_CEXPORT void ActorSetDrawOrder(void* a, float c);
+	ACTOR_CEXPORT void ActorQueueCommand(void* a, const char* c);
+	ACTOR_CEXPORT void ActorQueueMessage(void* a, const char* c);
+	ACTOR_CEXPORT float ActorGetX(void* a);
+	ACTOR_CEXPORT float ActorGetY(void* a);
+	ACTOR_CEXPORT float ActorGetZ(void* a);
+	ACTOR_CEXPORT float ActorGetDestX(void* a);
+	ACTOR_CEXPORT float ActorGetDestY(void* a);
+	ACTOR_CEXPORT float ActorGetDestZ(void* a);
+	ACTOR_CEXPORT float ActorGetWidth(void* a);
+	ACTOR_CEXPORT float ActorGetHeight(void* a);
+	ACTOR_CEXPORT float ActorGetZoomedWidth(void* a);
+	ACTOR_CEXPORT float ActorGetZoomedHeight(void* a);
+	ACTOR_CEXPORT float ActorGetZoom(void* a);
+	ACTOR_CEXPORT float ActorGetZoomX(void* a);
+	ACTOR_CEXPORT float ActorGetZoomY(void* a);
+	ACTOR_CEXPORT float ActorGetZoomZ(void* a);
+	ACTOR_CEXPORT float ActorGetBaseZoomX(void* a);
+	ACTOR_CEXPORT float ActorGetBaseZoomY(void* a);
+	ACTOR_CEXPORT float ActorGetBaseZoomZ(void* a);
+	ACTOR_CEXPORT float ActorGetBaseRotationX(void* a);
+	ACTOR_CEXPORT float ActorGetBaseRotationY(void* a);
+	ACTOR_CEXPORT float ActorGetBaseRotationZ(void* a);
+	ACTOR_CEXPORT float ActorGetSecsIntoEffect(void* a);
+	ACTOR_CEXPORT float ActorGetEffectDelta(void* a);
+	ACTOR_CEXPORT bool ActorGetVisible(void* a);
+	ACTOR_CEXPORT float ActorGetHAlign(void* a);
+	ACTOR_CEXPORT float ActorGetVAlign(void* a);
+	ACTOR_CEXPORT const char* ActorGetName(void* a);
+	ACTOR_CEXPORT void ActorSetFakeParent(void* a, void* b);
+	ACTOR_CEXPORT void ActorDraw(void* a);
+	ACTOR_CEXPORT void ActorSaveXY(void* a, float x, float y);
+	ACTOR_CEXPORT void ActorLoadXY(void* a);
+	ACTOR_CEXPORT bool ActorIsOver(void* a, float x, float y);
+}
+
 #endif
 
 /**

@@ -88,3 +88,12 @@ end
 function join(delimiter, list)
 	return table.concat(list, delimiter)
 end
+
+-- See https://www.freelists.org/post/luajit/21-regresion,4
+if pcall(require, "jit.opt") then
+	require("jit.opt").start(
+		"maxmcode=16386",
+		"maxtrace=5000"
+		--
+	)
+end

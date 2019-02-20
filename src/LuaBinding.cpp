@@ -239,8 +239,8 @@ LuaBinding::CheckLuaObjectType(lua_State* L,
 	return bRet;
 }
 
-static void
-GetGlobalTable(Lua* L)
+void
+GetGlobalActorTable(Lua* L)
 {
 	static LuaReference UserDataTable;
 	if (!UserDataTable.IsSet()) {
@@ -268,7 +268,7 @@ LuaBinding::ApplyDerivedType(Lua* L, const std::string& sClassName, void* pSelf)
 					  LUA_TUSERDATA));
 
 	if (iType == LUA_TTABLE) {
-		GetGlobalTable(L);
+		GetGlobalActorTable(L);
 		int iGlobalTable = lua_gettop(L);
 
 		/* If the table is already in the userdata table, then everything
@@ -307,7 +307,7 @@ LuaBinding::GetPointerFromStack(Lua* L, const std::string& sType, int iArg)
 	/* The stack has a userdata or a table.  If it's a table, look up the
 	 * associated userdata. */
 	if (lua_istable(L, iArg)) {
-		GetGlobalTable(L);
+		GetGlobalActorTable(L);
 
 		lua_pushvalue(L, iArg);
 		lua_rawget(L, -2);
@@ -364,7 +364,7 @@ LuaClass::~LuaClass()
 	int iTop = lua_gettop(L);
 
 	/* If we're registered in the global table, unregister. */
-	GetGlobalTable(L);
+	GetGlobalActorTable(L);
 	this->PushSelf(L);
 	lua_pushnil(L);
 	lua_rawset(L, -3);

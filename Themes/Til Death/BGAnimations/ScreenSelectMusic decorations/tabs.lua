@@ -10,14 +10,14 @@ local function input(event)
 			if
 				not (INPUTFILTER:IsBeingPressed("left ctrl") or INPUTFILTER:IsBeingPressed("right ctrl") or
 					(SCREENMAN:GetTopScreen():GetName() ~= "ScreenSelectMusic" and
-					 SCREENMAN:GetTopScreen():GetName() ~= "ScreenNetSelectMusic"))
+						SCREENMAN:GetTopScreen():GetName() ~= "ScreenNetSelectMusic"))
 			 then
 				if event.DeviceInput.button == "DeviceButton_0" then
 					setTabIndex(9)
 					MESSAGEMAN:Broadcast("TabChanged")
 				else
 					for i = 1, #tabNames do
-						local numpad = event.DeviceInput.button == "DeviceButton_KP "..event.char	-- explicitly ignore numpad inputs for tab swapping (doesn't care about numlock) -mina
+						local numpad = event.DeviceInput.button == "DeviceButton_KP " .. event.char -- explicitly ignore numpad inputs for tab swapping (doesn't care about numlock) -mina
 						if not numpad and event.char and tonumber(event.char) and tonumber(event.char) == i then
 							setTabIndex(i - 1)
 							MESSAGEMAN:Broadcast("TabChanged")
