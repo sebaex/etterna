@@ -110,6 +110,26 @@ class InputFilter
 extern InputFilter*
   INPUTFILTER; // global and accessible from anywhere in our program
 
+
+#if defined(_MSC_VER)
+			   //  Microsoft 
+#define ACTOR_CEXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+			   //  GCC
+#define ACTOR_CEXPORT __attribute__((visibility("default")))
+#else
+			   //  do nothing and hope for the best?
+#define ACTOR_CEXPORT
+#endif
+extern "C" {
+	ACTOR_CEXPORT float InputFilterGetMouseX();
+	ACTOR_CEXPORT float InputFilterGetMouseY();
+	ACTOR_CEXPORT float InputFilterGetMouseY();
+	ACTOR_CEXPORT bool InputFilterIsBeingPressed(const char* b, const char* optDevice);
+	ACTOR_CEXPORT float InputFilterIsShiftPressed();
+	ACTOR_CEXPORT float InputFilterIsControlPressed();
+}
+
 #endif
 
 /*

@@ -2975,41 +2975,41 @@ extern "C" {
 	void ActorSetFadeBottom(void* a, float x) {
 		((Actor*)a)->SetFadeBottom(x);
 	}
-	void ActorSetDiffuse(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuse(c);
+	void ActorSetDiffuse(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuse(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseUpperLeft(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseUpperLeft(c);
+	void ActorSetDiffuseUpperLeft(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseUpperLeft(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseUpperRight(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseUpperRight(c);
+	void ActorSetDiffuseUpperRight(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseUpperRight(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseLowerLeft(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseLowerLeft(c);
+	void ActorSetDiffuseLowerLeft(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseLowerLeft(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseLowerRight(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseLowerRight(c);
+	void ActorSetDiffuseLowerRight(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseLowerRight(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseLeftEdge(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseLeftEdge(c);
+	void ActorSetDiffuseLeftEdge(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseLeftEdge(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseRightEdge(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseRightEdge(c);
+	void ActorSetDiffuseRightEdge(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseRightEdge(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseTopEdge(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseTopEdge(c);
+	void ActorSetDiffuseTopEdge(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseTopEdge(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetDiffuseBottomEdge(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseBottomEdge(c);
+	void ActorSetDiffuseBottomEdge(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseBottomEdge(RageColor(r1, g1, b1, a1));
 	}
 	void ActorSetDiffuseAlpha(void* a, float c) {
 		((Actor*)a)->SetDiffuseAlpha(c);
 	}
-	void ActorSetDiffuseColor(void* a, RageColor c) {
-		((Actor*)a)->SetDiffuseColor(c);
+	void ActorSetDiffuseColor(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetDiffuseColor(RageColor(r1, g1, b1, a1));
 	}
-	void ActorSetGlow(void* a, RageColor c) {
-		((Actor*)a)->SetGlow(c);
+	void ActorSetGlow(void* a, float r1, float g1, float b1, float a1) {
+		((Actor*)a)->SetGlow(RageColor(r1, g1, b1, a1));
 	}
 	void ActorSetAux(void* a, float c) {
 		((Actor*)a)->SetAux(c);

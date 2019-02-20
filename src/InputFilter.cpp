@@ -587,6 +587,35 @@ class LunaInputFilter : public Luna<InputFilter>
 LUA_REGISTER_CLASS(InputFilter)
 // lua end
 
+extern "C" {
+	float InputFilterGetMouseX()
+	{
+		return SCALE(INPUTFILTER->GetCursorX(), 0, HOOKS->GetWindowWidth(), SCREEN_LEFT, SCREEN_RIGHT);
+	}
+	float InputFilterGetMouseY()
+	{
+		return SCALE(INPUTFILTER->GetCursorY(), 0, HOOKS->GetWindowHeight(), SCREEN_TOP, SCREEN_BOTTOM);
+	}
+	float GetMouseWheel()
+	{
+		return INPUTFILTER->GetMouseWheel();
+	}
+	bool InputFilterIsBeingPressed(const char* b, const char* optDevice)
+	{
+		DeviceButton button = StringToDeviceButton(RString(b));
+		InputDevice device = ((optDevice != nullptr) ? StringToInputDevice(RString(optDevice)) : DEVICE_KEYBOARD);
+		return INPUTFILTER->IsBeingPressed(DeviceInput(device, button));
+	}
+	float InputFilterIsShiftPressed()
+	{
+		return INPUTFILTER->IsShiftPressed();
+	}
+	float InputFilterIsControlPressed()
+	{
+		return INPUTFILTER->IsControlPressed();
+	}
+}
+
 /*
  * (c) 2001-2004 Chris Danford
  * All rights reserved.

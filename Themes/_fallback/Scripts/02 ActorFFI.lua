@@ -1,4 +1,9 @@
+Actor.IsOverA = Actor.IsOver
+InputFilter.GetMouseXA = InputFilter.GetMouseX
+InputFilter.GetMouseYA = InputFilter.GetMouseY
+
 local ffi = require("ffi")
+local C = ffi.C
 ffi.cdef [[
 	void ActorSetX(void* a, float x);
 	void ActorSetY(void* a, float x);
@@ -40,20 +45,20 @@ ffi.cdef [[
 	void ActorSetFadeTop(void* a, float x);
 	void ActorSetFadeRight(void* a, float x);
 	void ActorSetFadeBottom(void* a, float x);
-	/*
-	void ActorSetDiffuse(void* a, RageColor c);
-	void ActorSetDiffuseUpperLeft(void* a, RageColor c);
-	void ActorSetDiffuseUpperRight(void* a, RageColor c);
-	void ActorSetDiffuseLowerLeft(void* a, RageColor c);
-	void ActorSetDiffuseLowerRight(void* a, RageColor c);
-	void ActorSetDiffuseLeftEdge(void* a, RageColor c);
-	void ActorSetDiffuseRightEdge(void* a, RageColor c);
-	void ActorSetDiffuseTopEdge(void* a, RageColor c);
-	void ActorSetDiffuseBottomEdge(void* a, RageColor c);
+	
+	void ActorSetDiffuse(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseUpperLeft(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseUpperRight(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseLowerLeft(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseLowerRight(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseLeftEdge(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseRightEdge(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseTopEdge(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetDiffuseBottomEdge(void* a, float r1, float g1, float b1, float a1);
 	void ActorSetDiffuseAlpha(void* a, float c);
-	void ActorSetDiffuseColor(void* a, RageColor c);
-	void ActorSetGlow(void* a, RageColor c);
-	*/
+	void ActorSetDiffuseColor(void* a, float r1, float g1, float b1, float a1);
+	void ActorSetGlow(void* a, float r1, float g1, float b1, float a1);
+
 	void ActorSetAux(void* a, float c);
 	float ActorGetAux(void* a);
 	void ActorSetRotationX(void* a, float x);
@@ -158,60 +163,63 @@ ffi.cdef [[
 	bool ActorIsOver(void* a, float x, float y);
 ]]
 
-local ffi = require("ffi")
+FFIUtils = {}
 --[[
 	Actor lua handles are tables, which allows themers to store state in self
 	Because of this, there's a global table which maps the actor table to the 
 	actor userdata (The pointer to the C++ object)
 ]]
 local GlobalActorTable = GlobalActorTable
+FFIUtils.GlobalActorTable = GlobalActorTable
 local function getActorPtr(thing)
-    --[[
+	--[[
 		Singletons are cdatas (ptrs) already, so we only index the table if self is a table(actor)
 		We need to account for this because both normal actors and singletons/screens use the metatable
 	--]]
-    return type(thing) == "table" and GlobalActorTable[thing] or thing
+	return type(thing) == "table" and GlobalActorTable[thing] or thing
 end
-local C = ffi.C
+FFIUtils.getActorPtr = getActorPtr
 local funcs = {
-    [0] = function(fName)
-        return function(self)
-            return C[fName](getActorPtr(self))
-        end
-    end,
-    [1] = function(fName)
-        return function(self, a)
-            return C[fName](getActorPtr(self), a)
-        end
-    end,
-    [2] = function(fName)
-        return function(self, a, b)
-            return C[fName](getActorPtr(self), a, b)
-        end
-    end,
-    [3] = function(fName)
-        return function(self, a, b, c)
-            return C[fName](getActorPtr(self), a, b, c)
-        end
-    end,
-    [4] = function(fName)
-        return function(self, a, b, c, d)
-            return C[fName](getActorPtr(self), a, b, c, d)
-        end
-    end,
-    [5] = function(fName)
-        return function(self, a, b, c, d, e)
-            return C[fName](getActorPtr(self), a, b, c, d, e)
-        end
-    end
+	[0] = function(fName)
+		return function(self)
+			return C[fName](getActorPtr(self))
+		end
+	end,
+	[1] = function(fName)
+		return function(self, a)
+			return C[fName](getActorPtr(self), a)
+		end
+	end,
+	[2] = function(fName)
+		return function(self, a, b)
+			return C[fName](getActorPtr(self), a, b)
+		end
+	end,
+	[3] = function(fName)
+		return function(self, a, b, c)
+			return C[fName](getActorPtr(self), a, b, c)
+		end
+	end,
+	[4] = function(fName)
+		return function(self, a, b, c, d)
+			return C[fName](getActorPtr(self), a, b, c, d)
+		end
+	end,
+	[5] = function(fName)
+		return function(self, a, b, c, d, e)
+			return C[fName](getActorPtr(self), a, b, c, d, e)
+		end
+	end
 }
 local function generator(fName, n, dontReturnSelf)
-    local f = funcs[n](fName)
-    return dontReturnSelf and f or function(self, ...)
-            f(self, ...)
-            return self
-        end
+	local f = funcs[n](fName)
+	return dontReturnSelf and f or function(self, ...)
+			f(self, ...)
+			return self
+		end
 end
+FFIUtils.generator = generator
+
 Actor.x = generator("ActorSetX", 1)
 Actor.y = generator("ActorSetY", 1)
 Actor.z = generator("ActorSetZ", 1)
@@ -227,7 +235,6 @@ Actor.spring = generator("ActorSpring", 1)
 Actor.stoptweening = generator("ActorStopTweening", 0)
 Actor.finishtweening = generator("ActorFinishTweening", 0)
 Actor.hurrytweening = generator("ActorHurryTweening", 1)
-
 Actor.Sleep = generator("ActorSleep", 1)
 Actor.sleep = Actor.Sleep
 Actor.SetXY = generator("ActorSetXY", 2)
@@ -243,7 +250,7 @@ Actor.SetZoomX = generator("ActorSetZoomX", 1)
 Actor.SetZoomY = generator("ActorSetZoomY", 1)
 Actor.SetZoomZ = generator("ActorSetZoomZ", 1)
 Actor.SetZoomTo = generator("ActorSetZoomTo", 2)
-Actor.zoom = Actor.SetZoom
+--Actor.zoom = Actor.SetZoom
 Actor.zoomx = Actor.SetZoomX
 Actor.zoomy = Actor.SetZoomY
 Actor.zoomz = Actor.SetZoomZ
@@ -270,7 +277,45 @@ Actor.SetFadeLeft = generator("ActorSetFadeLeft", 1)
 Actor.SetFadeTop = generator("ActorSetFadeTop", 1)
 Actor.SetFadeRight = generator("ActorSetFadeRight", 1)
 Actor.SetFadeBottom = generator("ActorSetFadeBottom", 1)
+Actor.SetFadeBottom = generator("ActorSetFadeBottom", 1)
 
+--[[
+local function setColorGenerator(stfNamer)
+	return function(self, r, g, b, a)
+		if type(r) == "table" then
+			C[fName](getActorPtr(self), r[1], r[2], r[3], r[4])
+		else
+			C[fName](getActorPtr(self), r, g, b, a)
+		end
+		return self
+	end
+end
+FFIUtils.setColorGenerator = setColorGenerator
+Actor.SetDiffuse = setColorGenerator "ActorSetDiffuse"
+Actor.diffuse = Actor.SetDiffuse
+Actor.SetDiffuseUpperLeft = setColorGenerator "ActorSetDiffuseUpperLeft"
+Actor.diffuseupperleft = Actor.SetDiffuseUpperLeft
+Actor.SetDiffuseUpperRight = setColorGenerator "ActorSetDiffuseUpperRight"
+Actor.diffuseupperright = Actor.SetDiffuseUpperRight
+Actor.SetDiffuseLowerLeft = setColorGenerator "ActorSetDiffuseLowerLeft"
+Actor.diffuselowerleft = Actor.SetDiffuseLowerLeft
+Actor.SetDiffuseLowerRight = setColorGenerator "ActorSetDiffuseLowerRight"
+Actor.diffuselowerright = Actor.SetDiffuseLowerRight
+Actor.SetDiffuseLeftEdge = setColorGenerator "ActorSetDiffuseLeftEdge"
+Actor.diffuseleftedge = Actor.SetDiffuseLeftEdge
+Actor.SetDiffuseRightEdge = setColorGenerator "ActorSetDiffuseRightEdge"
+Actor.diffuserightedge = Actor.SetDiffuseRightEdge
+Actor.SetDiffuseTopEdge = setColorGenerator "ActorSetDiffuseTopEdge"
+Actor.diffusetopedge = Actor.SetDiffuseTopEdge
+Actor.SetDiffuseBottomEdge = setColorGenerator "ActorSetDiffuseBottomEdge"
+Actor.diffusebottomedge = Actor.SetDiffuseBottomEdge
+Actor.SetDiffuseAlpha = generator("ActorSetDiffuseAlpha", 1)
+Actor.diffusealpha = Actor.SetDiffuseAlpha
+Actor.SetDiffuseColor = setColorGenerator "ActorSetDiffuseColor"
+Actor.diffusecolor = Actor.SetDiffuseAlpha
+Actor.SetGlow = setColorGenerator "ActorSetGlow"
+Actor.glow = Actor.SetGlow
+--]]
 Actor.SetAux = generator("ActorSetAux", 1)
 Actor.GetAux = generator("ActorGetAux", 0, true)
 Actor.SetRotationX = generator("ActorSetRotationX", 1)
@@ -288,16 +333,16 @@ Actor.addrotationx = Actor.AddRotationX
 Actor.addrotationy = Actor.AddRotationY
 Actor.addrotationz = Actor.AddRotationZ
 do
-    --[[
+	--[[
 	The most efficient multiple return idea i could find was allocating a buffer once
 	and filling it in the function.
 	Owning/Allocating it in the lua side makes accessing it super simple
---]]
-    local buf = ffi.new("float[3]")
-    Actor.GetRotation = function(self)
-        C.GetRotation(getActorPtr(self), buf)
-        return {buf[0], buf[1], buf[2]}
-    end
+	--]]
+	local buf = ffi.new("float[3]")
+	Actor.GetRotation = function(self)
+		C.ActorGetRotation(getActorPtr(self), buf)
+		return {buf[0], buf[1], buf[2]}
+	end
 end
 Actor.getrotation = Actor.GetRotation
 Actor.SetBaseRotationX = generator("ActorSetBaseRotationX", 1)
@@ -311,8 +356,8 @@ Actor.Roll = generator("ActorRoll", 1)
 Actor.baerotationx = Actor.SetBaseRotationX
 Actor.baserotationy = Actor.SetBaseRotationY
 Actor.baserotationz = Actor.SetBaseRotationZ
-Actor.skewy = Actor.SetSkewX
-Actor.skewx = Actor.SetSkewY
+Actor.skewy = Actor.SetSkewY
+Actor.skewx = Actor.SetSkewX
 Actor.heading = Actor.Heading
 Actor.pitch = Actor.Pitch
 Actor.roll = Actor.Roll
@@ -343,16 +388,14 @@ Actor.spin = generator("Actorspin", 0)
 Actor.vibrate = generator("Actorvibrate", 0)
 Actor.StopEffect = generator("ActorStopEffect", 0)
 Actor.stopeffect = Actor.StopEffect
-
 Actor.IsOver = generator("ActorIsOver", 2, true)
 Actor.Draw = generator("ActorDraw", 1)
 Actor.LoadXY = generator("ActorLoadXY", 0)
 Actor.SaveXY = generator("ActorSaveXY", 2)
-
 Actor.visible = function(self, b)
-    -- We need to cast to boolean manually
-    C.ActorSetVisible(getActorPtr(self), not (not b))
-    return self
+	-- We need to cast to boolean manually
+	C.ActorSetVisible(getActorPtr(self), not (not b))
+	return self
 end
 Actor.SetVisible = Actor.visible
 Actor.SetDrawOrder = generator("ActorSetDrawOrder", 1)
@@ -371,7 +414,7 @@ Actor.GetWidth = generator("ActorGetWidth", 0, true)
 Actor.GetHeight = generator("ActorGetHeight", 0, true)
 Actor.GetZoomedWidth = generator("ActorGetZoomedWidth", 0, true)
 Actor.GetZoomedHeight = generator("ActorGetZoomedHeight", 0, true)
-Actor.GetZoom = generator("ActorGetZoom", 1)
+Actor.GetZoom = generator("ActorGetZoom", 0)
 Actor.GetZoomX = generator("ActorGetZoomX", 0, true)
 Actor.GetZoomY = generator("ActorGetZoomY", 0, true)
 Actor.GetZoomZ = generator("ActorGetZoomZ", 0, true)
@@ -387,12 +430,95 @@ Actor.GetVisible = generator("ActorGetVisible", 0, true)
 Actor.GetHAlign = generator("ActorGetHAlign", 0, true)
 Actor.GetVAlign = generator("ActorGetVAlign", 0, true)
 Actor.GetName = function(self)
-    -- If something returns a char* we need to manually turn it
-    -- into an interned lua string
-    return ffi.string(C.ActorGetName(getActorPtr(self)))
+	-- If something returns a char* we need to manually turn it
+	-- into an interned lua string
+	return ffi.string(C.ActorGetName(getActorPtr(self)))
 end
 generator("ActorGetName", 0, true)
 Actor.SetFakeParent = function(self, fakeP)
-    C.SetFakeParent(getActorPtr(self), getActorPtr(fakeP))
-    return self
+	C.ActorSetFakeParent(getActorPtr(self), getActorPtr(fakeP))
+	return self
+end
+ffi.cdef [[
+	float InputFilterGetMouseX();
+	float InputFilterGetMouseY();
+	float InputFilterGetMouseY();
+	bool InputFilterIsBeingPressed(const char* b, const char* optDevice);
+	float InputFilterIsShiftPressed();
+	float InputFilterIsControlPressed();
+]]
+InputFilter.GetMouseX = function()
+	return C.InputFilterGetMouseX()
+end
+InputFilter.GetMouseY = function()
+	return C.InputFilterGetMouseY()
+end
+InputFilter.IsShiftPressed = function()
+	return C.InputFilterIsShiftPressed()
+end
+InputFilter.IsControlPressed = function()
+	return C.InputFilterIsControlPressed()
+end
+InputFilter.IsBeingPressed = function(button, device)
+	return C.InputFilterIsBeingPressed(button, device)
+end
+
+ffi.cdef [[
+	void SpriteLoad(void* a, const char* x);
+	void SpriteLoadBanner(void* a, const char*x);
+	void SpriteLoadBackground(void* a, const char* x);
+	void SpriteLoadFromCached(void* a, const char* x, const char* y);
+	void SpriteSetCustomTextureRect(void* a, float x, float y, float z, float h);
+	void SpriteSetCustomImageRect(void* a, float x, float y, float z, float h);
+	void SpriteSetCustomPosCoords(void* a, float* x);
+	void SpriteStopUsingCustomPosCoords(void* a);
+	void SpriteSetTexCoordVelocity(void* a, float x, float y);
+	bool Spriteget_use_effect_clock_for_texcoords(void* a);
+	void Spriteset_use_effect_clock_for_texcoords(void* a, bool x);
+	void SpriteScaleToClipped(void* a, float x, float y);
+	void SpriteCropTo(void* a, float x, float y);
+	void SpriteStretchTex(void* a, float x, float y);
+	void SpriteAddImageCoords(void* a, float x, float y);
+	void SpriteSetState(void* a, int x);
+	int SpriteGetState(void* a);
+	float SpriteGetAnimationLengthSeconds(void* a);
+	void SpriteSetSecondsIntoAnimation(void* a, float x);
+	int SpriteGetNumStates(void* a);
+	bool SpriteGetDecodeMovie(void* a);
+	void SpriteSetDecodeMovie(void* a, bool x);
+	//todo
+	/*
+		void SpriteSetStateProperties(void* a, Sprite::State* x, int n);
+	void SpriteSetTexture(void* a, RageTexture* x);
+	RageTexture* SpriteGetTexture(void* a);
+	void SpriteSetEffectMode(void* a, EffectMode x);
+	void SpriteSetAllStateDelays(void* a, float x);
+	*/
+]]
+local generator = FFIUtils.generator
+Sprite.Load = generator("SpriteLoad", 1)
+Sprite.LoadBanner = generator("SpriteLoadBanner", 1)
+Sprite.LoadBackground = generator("SpriteLoadBackground", 1)
+Sprite.LoadFromCached = generator("SpriteLoadFromCached", 2)
+Sprite.SetCustomTextureRect = generator("SpriteSetCustomTextureRect", 4)
+Sprite.SetCustomImageRect = generator("SpriteSetCustomImageRect", 4)
+Sprite.SetCustomPosCoords = generator("SpriteSetCustomPosCoords", 1)
+Sprite.StopUsingCustomPosCoords = generator("SpriteStopUsingCustomPosCoords", 0)
+Sprite.SetTexCoordVelocity = generator("SpriteSetTexCoordVelocity", 2)
+Sprite.get_use_effect_clock_for_texcoords = generator("Spriteget_use_effect_clock_for_texcoords", 0, true)
+Sprite.set_use_effect_clock_for_texcoords = generator("Spriteset_use_effect_clock_for_texcoords", 1)
+Sprite.ScaleToClipped = generator("SpriteScaleToClipped", 2)
+Sprite.CropTo = generator("SpriteCropTo", 2)
+Sprite.StretchTex = generator("SpriteStretchTex", 2)
+Sprite.AddImageCoords = generator("SpriteAddImageCoords", 2)
+Sprite.SetState = generator("SpriteSetState", 1)
+Sprite.GetState = generator("SpriteGetState", 0, true)
+Sprite.GetAnimationLengthSeconds = generator("SpriteGetAnimationLengthSeconds", 0, true)
+Sprite.SetSecondsIntoAnimation = generator("SpriteSetSecondsIntoAnimation", 1)
+Sprite.GetNumStates = generator("SpriteGetNumStates", 0, true)
+Sprite.GetDecodeMovie = generator("SpriteGetDecodeMovie", 0, true)
+Sprite.SetDecodeMovie = function(self, b)
+	-- We need to cast to boolean manually
+	C.SpriteSetDecodeMovie(getActorPtr(self), not (not b))
+	return self
 end

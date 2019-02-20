@@ -163,10 +163,10 @@ class Sprite : public Actor
 #define ACTOR_CEXPORT
 #endif
 extern "C" {
-	ACTORSPRITE_CEXPORT void SpriteLoad(void* a, char* x);
-	ACTORSPRITE_CEXPORT void SpriteLoadBanner(void* a, char* x);
-	ACTORSPRITE_CEXPORT void SpriteLoadBackground(void* a, char* x);
-	ACTORSPRITE_CEXPORT void SpriteLoadFromCached(void* a, char* x, char* y);
+	ACTORSPRITE_CEXPORT void SpriteLoad(void* a, const char* x);
+	ACTORSPRITE_CEXPORT void SpriteLoadBanner(void* a, const char*x);
+	ACTORSPRITE_CEXPORT void SpriteLoadBackground(void* a, const char* x);
+	ACTORSPRITE_CEXPORT void SpriteLoadFromCached(void* a, const char* x, const char* y);
 	ACTORSPRITE_CEXPORT void SpriteSetCustomTextureRect(void* a, float x, float y, float z, float h);
 	ACTORSPRITE_CEXPORT void SpriteSetCustomImageRect(void* a, float x, float y, float z, float h);
 	ACTORSPRITE_CEXPORT void SpriteSetCustomPosCoords(void* a, float* x);
@@ -174,7 +174,7 @@ extern "C" {
 	ACTORSPRITE_CEXPORT void SpriteSetTexCoordVelocity(void* a, float x, float y);
 	ACTORSPRITE_CEXPORT bool Spriteget_use_effect_clock_for_texcoords(void* a);
 	ACTORSPRITE_CEXPORT void Spriteset_use_effect_clock_for_texcoords(void* a, bool x);
-	ACTORSPRITE_CEXPORT void SpriteCropTo(void* a, float x, float y);
+	ACTORSPRITE_CEXPORT void SpriteScaleToClipped(void* a, float x, float y);
 	ACTORSPRITE_CEXPORT void SpriteCropTo(void* a, float x, float y);
 	ACTORSPRITE_CEXPORT void SpriteStretchTex(void* a, float x, float y);
 	ACTORSPRITE_CEXPORT void SpriteAddImageCoords(void* a, float x, float y);

@@ -1439,23 +1439,23 @@ LUA_REGISTER_DERIVED_CLASS(Sprite, Actor)
 // lua end
 
 extern "C" {
-	void SpriteLoad(void* a, char* x) {
+	void SpriteLoad(void* a, const char* x) {
 		 if( x == nullptr)
 			 ((Sprite*)a)->UnloadTexture();
 		 else
 			((Sprite*)a)->Load(RageTextureID(x));
 	}
-	void SpriteLoadBanner(void* a, char* x) {
+	void SpriteLoadBanner(void* a, const char* x) {
 		TEXTUREMAN->DisableOddDimensionWarning();
 		((Sprite*)a)->Load(Sprite::SongBannerTexture(RageTextureID(x)));
 		TEXTUREMAN->EnableOddDimensionWarning();
 	}
-	void SpriteLoadBackground(void* a, char* x) {
+	void SpriteLoadBackground(void* a, const char* x) {
 		TEXTUREMAN->DisableOddDimensionWarning();
 		((Sprite*)a)->Load(Sprite::SongBGTexture(RageTextureID(x)));
 		TEXTUREMAN->EnableOddDimensionWarning();
 	}
-	void ActorLoadFromCached(void* a, char* x, char* y) {
+	void SpriteLoadFromCached(void* a, const char* x, const char* y) {
 		((Sprite*)a)->LoadFromCached(x, y);
 	}
 	void SpriteSetCustomTextureRect(void* a, float x, float y, float z, float h) {
