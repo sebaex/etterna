@@ -775,12 +775,6 @@ LuaManager::RegisterTypes()
 	GetGlobalActorTable(L);
 	lua_setglobal(L, "GlobalActorTable");
 
-	lua_getglobal(L, "_ActorTypeRegistrationHook");
-	if (!lua_isnil(L, -1))
-		lua_pcall(L, 0, 0, 0);
-	else
-		lua_pop(L, 1);
-
 	Release(L);
 }
 
