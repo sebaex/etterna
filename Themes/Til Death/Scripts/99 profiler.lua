@@ -29,12 +29,26 @@ function startProfiler(updateInterval, depth, usevmmode, tablePrinter, topN)
                     if type(k) ~= "number" then
                         k = '"' .. k .. '"'
                     end
-                    s = s .. "[" .. k .. "] = " .. dump(v) .. ",\n"
+                    s = s .. "[" .. k .. "] = " .. tablePrinter(v) .. ",\n"
                 end
                 return s .. "} "
             else
                 return tostring(o)
             end
+        end
+    local sum = function(t)
+        local s = 0
+        for _, v in pairs(t) do
+            s = s + v
+        end
+        return s
+    end
+    local sortF = usevmmode and function(a, b)
+            local aSum = sum(a[2])
+            local bSum = sum(b[2])
+            return aSum > bSum
+        end or function(a, b)
+            return a[2] > b[2]
         end
     SCREENMAN:GetTopScreen():setInterval(
         function()
@@ -44,16 +58,11 @@ function startProfiler(updateInterval, depth, usevmmode, tablePrinter, topN)
                 tmp[n + 1] = {k, v}
                 n = n + 1
             end
-            table.sort(
-                tmp,
-                function(a, b)
-                    return a[2] > b[2]
-                end
-            )
+            table.sort(tmp, sortF)
             local str = ""
             for i = 1, topN and math.min(#tmp, topN) or (#tmp) do
                 v = tmp[i]
-                str = str .. tablePrinter(v[1]) .. " =" .. tostring(v[2]) .. "\n"
+                str = str .. tablePrinter(v[1]) .. " =" .. tablePrinter(v[2]) .. "\n"
             end
             SCREENMAN:SystemMessage(str)
         end,
