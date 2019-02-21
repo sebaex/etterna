@@ -1088,6 +1088,7 @@ extern "C" {
 	ACTOR_CEXPORT void ActorSaveXY(void* a, float x, float y);
 	ACTOR_CEXPORT void ActorLoadXY(void* a);
 	ACTOR_CEXPORT bool ActorIsOver(void* a, float x, float y);
+	ACTOR_CEXPORT bool ActorIsVisible(void* a);
 }
 
 #endif

@@ -3417,6 +3417,9 @@ extern "C" {
 	bool ActorIsOver(void* a, float x, float y) {
 		return ((Actor*)a)->IsOver(x, y);
 	}
+	bool ActorIsVisible(void* a) {
+		return ((Actor*)a)->IsVisible();
+	}
 }
 
 /*

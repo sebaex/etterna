@@ -1,9 +1,91 @@
-Actor.IsOverA = Actor.IsOver
-InputFilter.GetMouseXA = InputFilter.GetMouseX
-InputFilter.GetMouseYA = InputFilter.GetMouseY
-
+--[[
+	It seems using this doesn't actually improve performance *at all*
+	Despite (https://stackoverflow.com/questions/16131793/when-using-luajit-is-it-better-to-use-ffi-or-normal-lua-bindings)
+	My guess is the call-overhead is really not a bottleneck or any significant part of cpu load
+]]
 local ffi = require("ffi")
 local C = ffi.C
+FFIUtils = {}
+--[[
+	Actor lua handles are tables, which allows themers to store state in self
+	Because of this, there's a global table which maps the actor table to the 
+	actor userdata (The pointer to the C++ object)
+]]
+local GlobalActorTable = GlobalActorTable
+FFIUtils.GlobalActorTable = GlobalActorTable
+local function getActorPtr(thing)
+	--[[
+		Singletons are cdatas (ptrs) already, so we only index the table if self is a table(actor)
+		We need to account for this because both normal actors and singletons/screens use the metatable
+	--]]
+	return type(thing) == "table" and GlobalActorTable[thing] or thing
+end
+FFIUtils.getActorPtr = getActorPtr
+local funcs = {
+	[0] = function(fName)
+		return function(self)
+			return C[fName](getActorPtr(self))
+		end
+	end,
+	[1] = function(fName)
+		return function(self, a)
+			return C[fName](getActorPtr(self), a)
+		end
+	end,
+	[2] = function(fName)
+		return function(self, a, b)
+			return C[fName](getActorPtr(self), a, b)
+		end
+	end,
+	[3] = function(fName)
+		return function(self, a, b, c)
+			return C[fName](getActorPtr(self), a, b, c)
+		end
+	end,
+	[4] = function(fName)
+		return function(self, a, b, c, d)
+			return C[fName](getActorPtr(self), a, b, c, d)
+		end
+	end,
+	[5] = function(fName)
+		return function(self, a, b, c, d, e)
+			return C[fName](getActorPtr(self), a, b, c, d, e)
+		end
+	end
+}
+local function generator(fName, n, dontReturnSelf)
+	local f = funcs[n](fName)
+	return dontReturnSelf and f or function(self, ...)
+			f(self, ...)
+			return self
+		end
+end
+FFIUtils.generator = generator
+
+ffi.cdef [[
+	float InputFilterGetMouseX();
+	float InputFilterGetMouseY();
+	float InputFilterGetMouseY();
+	bool InputFilterIsBeingPressed(const char* b, const char* optDevice);
+	float InputFilterIsShiftPressed();
+	float InputFilterIsControlPressed();
+]]
+InputFilter.GetMouseX = function()
+	return C.InputFilterGetMouseX()
+end
+InputFilter.GetMouseY = function()
+	return C.InputFilterGetMouseY()
+end
+InputFilter.IsShiftPressed = function()
+	return C.InputFilterIsShiftPressed()
+end
+InputFilter.IsControlPressed = function()
+	return C.InputFilterIsControlPressed()
+end
+InputFilter.IsBeingPressed = function(button, device)
+	return C.InputFilterIsBeingPressed(button, device)
+end
+
 ffi.cdef [[
 	void ActorSetX(void* a, float x);
 	void ActorSetY(void* a, float x);
@@ -161,64 +243,8 @@ ffi.cdef [[
 	void ActorSaveXY(void* a, float x, float y);
 	void ActorLoadXY(void* a);
 	bool ActorIsOver(void* a, float x, float y);
+	bool ActorIsVisible(void*a);
 ]]
-
-FFIUtils = {}
---[[
-	Actor lua handles are tables, which allows themers to store state in self
-	Because of this, there's a global table which maps the actor table to the 
-	actor userdata (The pointer to the C++ object)
-]]
-local GlobalActorTable = GlobalActorTable
-FFIUtils.GlobalActorTable = GlobalActorTable
-local function getActorPtr(thing)
-	--[[
-		Singletons are cdatas (ptrs) already, so we only index the table if self is a table(actor)
-		We need to account for this because both normal actors and singletons/screens use the metatable
-	--]]
-	return type(thing) == "table" and GlobalActorTable[thing] or thing
-end
-FFIUtils.getActorPtr = getActorPtr
-local funcs = {
-	[0] = function(fName)
-		return function(self)
-			return C[fName](getActorPtr(self))
-		end
-	end,
-	[1] = function(fName)
-		return function(self, a)
-			return C[fName](getActorPtr(self), a)
-		end
-	end,
-	[2] = function(fName)
-		return function(self, a, b)
-			return C[fName](getActorPtr(self), a, b)
-		end
-	end,
-	[3] = function(fName)
-		return function(self, a, b, c)
-			return C[fName](getActorPtr(self), a, b, c)
-		end
-	end,
-	[4] = function(fName)
-		return function(self, a, b, c, d)
-			return C[fName](getActorPtr(self), a, b, c, d)
-		end
-	end,
-	[5] = function(fName)
-		return function(self, a, b, c, d, e)
-			return C[fName](getActorPtr(self), a, b, c, d, e)
-		end
-	end
-}
-local function generator(fName, n, dontReturnSelf)
-	local f = funcs[n](fName)
-	return dontReturnSelf and f or function(self, ...)
-			f(self, ...)
-			return self
-		end
-end
-FFIUtils.generator = generator
 
 Actor.x = generator("ActorSetX", 1)
 Actor.y = generator("ActorSetY", 1)
@@ -397,6 +423,7 @@ Actor.visible = function(self, b)
 	C.ActorSetVisible(getActorPtr(self), not (not b))
 	return self
 end
+Actor.IsVisible = generator("ActorIsVisible", 0, true)
 Actor.SetVisible = Actor.visible
 Actor.SetDrawOrder = generator("ActorSetDrawOrder", 1)
 Actor.draworder = Actor.SetDrawOrder
@@ -439,30 +466,6 @@ Actor.SetFakeParent = function(self, fakeP)
 	C.ActorSetFakeParent(getActorPtr(self), getActorPtr(fakeP))
 	return self
 end
-ffi.cdef [[
-	float InputFilterGetMouseX();
-	float InputFilterGetMouseY();
-	float InputFilterGetMouseY();
-	bool InputFilterIsBeingPressed(const char* b, const char* optDevice);
-	float InputFilterIsShiftPressed();
-	float InputFilterIsControlPressed();
-]]
-InputFilter.GetMouseX = function()
-	return C.InputFilterGetMouseX()
-end
-InputFilter.GetMouseY = function()
-	return C.InputFilterGetMouseY()
-end
-InputFilter.IsShiftPressed = function()
-	return C.InputFilterIsShiftPressed()
-end
-InputFilter.IsControlPressed = function()
-	return C.InputFilterIsControlPressed()
-end
-InputFilter.IsBeingPressed = function(button, device)
-	return C.InputFilterIsBeingPressed(button, device)
-end
-
 ffi.cdef [[
 	void SpriteLoad(void* a, const char* x);
 	void SpriteLoadBanner(void* a, const char*x);
