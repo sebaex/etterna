@@ -342,6 +342,7 @@ Widg.Button = function(params)
 	end
 
 	local button
+	local highlightUpdateF = nil
 	button =
 		Widg.Container {
 		onInit = function(self)
@@ -349,7 +350,7 @@ Widg.Button = function(params)
 				params.onInit(self)
 			end
 			if params.highlight then
-				self:SetUpdateFunction(highlight)
+				self:SetUpdateFunction(highlightUpdateF)
 				self:SetUpdateFunctionInterval(1 / 30)
 			end
 			self.params = params
@@ -405,31 +406,75 @@ Widg.Button = function(params)
 		valign = params.valign,
 		visible = not params.texture
 	}
-	button.bg.HighlightCommand = params.highlight and function(self)
-			local mainActor = params.texture and button.sprite.actor or self
-			local isOver = isOver(self)
-			if params.highlight.texture then
-				(button.highlightSprite.actor):visible(isOver)
+	do
+		local wasOver = true
+		local old = button.bg.BeginCommand
+		local mainActor
+		button.bg.BeginCommand = function(self)
+			if old then
+				old(self)
 			end
-			if isOver then
-				if params.highlight.color then
-					mainActor:diffuse(params.highlight.color)
-				end
-				mainActor:diffusealpha(params.highlight.alpha or params.alpha or 1)
-				if params.onHighlight then
-					params.onHighlight(mainActor)
-				end
-			else
-				if params.bgColor then
-					mainActor:diffuse(params.bgColor)
-				end
-				mainActor:diffusealpha(params.alpha)
-				if params.onUnhighlight then
-					params.onUnhighlight(mainActor)
-				end
+			mainActor = params.texture and button.sprite.actor or self
+		end
+		local onOver = function()
+			mainActor:diffusealpha(params.highlight.alpha or params.alpha or 1)
+		end
+		if params.highlight.color then
+			local old = onOver
+			onOver = function()
+				old()
+				mainActor:diffuse(params.highlight.color)
 			end
-		end or nil
-
+		end
+		if params.onHighlight then
+			local old = onOver
+			onOver = function()
+				old()
+				params.onHighlight(mainActor)
+			end
+		end
+		local onNotOver = function()
+			mainActor:diffusealpha(params.alpha)
+		end
+		if params.bgColor then
+			local old = onNotOver
+			onNotOver = function()
+				old()
+				mainActor:diffuse(params.bgColor)
+			end
+		end
+		if params.onUnhighlight then
+			local old = onNotOver
+			onNotOver = function()
+				old()
+				params.onUnhighlight(mainActor)
+			end
+		end
+		highlightUpdateF = params.highlight and (params.highlight.texture and function(self)
+					local isOver = isOver(self)
+					if isOver ~= wasOver then
+						if params.highlight.texture then
+							(button.highlightSprite.actor):visible(isOver)
+						end
+						if isOver then
+							onOver()
+						else
+							onNotOver()
+						end
+					end
+					wasOver = isOver
+				end or function(self)
+					local isOver = isOver(self)
+					if isOver ~= wasOver then
+						if isOver then
+							onOver()
+						else
+							onNotOver()
+						end
+					end
+					wasOver = isOver
+				end) or nil
+	end
 	button.borders =
 		(params.texture or not params.border) and Def.ActorFrame {} or
 		Widg.Borders {

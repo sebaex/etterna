@@ -29,15 +29,9 @@ local function input(event)
 end
 
 local function Update(self)
-	if show then
-		t.InitCommand = function(self)
-			self:SetUpdateFunction(Update)
-		end
-		curTime = GetTimeSinceStart()
-		if (not enabled) and (curTime - lastTime > showTime) then
-			MESSAGEMAN:Broadcast("ShowHelpOverlay")
-			enabled = true
-		end
+	if show and (not enabled) and (GetTimeSinceStart() - lastTime > showTime) then
+		MESSAGEMAN:Broadcast("ShowHelpOverlay")
+		enabled = true
 	--self:GetChild("Timer"):playcommand("Set")
 	end
 end
@@ -46,6 +40,7 @@ local t =
 	Def.ActorFrame {
 	InitCommand = function(self)
 		self:SetUpdateFunction(Update)
+		self:SetUpdateFunctionInterval(1 / 20)
 	end,
 	OnCommand = function(self)
 		self:diffusealpha(0)

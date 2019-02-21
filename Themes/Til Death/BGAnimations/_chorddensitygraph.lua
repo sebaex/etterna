@@ -6,14 +6,15 @@ local hidth = 40
 local txtoff = 10
 
 local textonleft = true
-local npstext
+local npstextActor
+local npslineActor
 local function textmover(self)
-	if isOver(npstext) then
+	if isOver(npstextActor) then
 		if textonleft then
-			npstext:x(wodth - txtoff):halign(1)
+			npstextActor:x(wodth - txtoff):halign(1)
 			textonleft = false
 		else
-			npstext:x(txtoff):halign(0)
+			npstextActor:x(txtoff):halign(0)
 			textonleft = true
 		end
 	end
@@ -66,8 +67,8 @@ local function updateGraphMultiVertex(parent, realgraph)
 			end
 		end
 
-		isOver(npstext):y(-hidth * 0.7)
-		isOver(npstext):settext(hodth / 2 * 0.7 .. "nps"):y(-hidth * 0.9)
+		npslineActor:y(-hidth * 0.7)
+		npstextActor:settext(hodth / 2 * 0.7 .. "nps"):y(-hidth * 0.9)
 		hodth = hidth / hodth
 		local verts = {} -- reset the vertices for the graph
 		local yOffset = 0 -- completely unnecessary, just a Y offset from the graph
@@ -92,11 +93,14 @@ local function updateGraphMultiVertex(parent, realgraph)
 	end
 end
 
+local tActor
 local t =
 	Def.ActorFrame {
 	Name = "ChordDensityGraph",
 	InitCommand = function(self)
-		self:SetUpdateFunction(textmover)
+		tActor = self
+		--self:SetUpdateFunction(textmover)
+		self:SetUpdateFunctionInterval(1 / 20)
 		cdg = self
 	end,
 	CurrentSongChangedMessageCommand = function(self)
@@ -108,6 +112,8 @@ local t =
 	CurrentRateChangedMessageCommand = function(self)
 		if self:IsVisible() then
 			self:queuecommand("GraphUpdate")
+		else
+			self:SetUpdateFunction(nil)
 		end
 	end,
 	ChartPreviewOnMessageCommand = function(self)
@@ -126,9 +132,12 @@ t[#t + 1] =
 	Name = "CDGraphDrawer",
 	GraphUpdateCommand = function(self)
 		if self:IsVisible() then
+			tActor:SetUpdateFunction(textmover)
 			updateGraphMultiVertex(cdg, self)
-			self:GetParent():linear(0.3)
-			self:GetParent():diffusealpha(1)
+			tActor:linear(0.3)
+			tActor:diffusealpha(1)
+		else
+			tActor:SetUpdateFunction(nil)
 		end
 	end
 }
@@ -138,6 +147,7 @@ t[#t + 1] =
 	Def.Quad {
 	Name = "npsline",
 	InitCommand = function(self)
+		npslineActor = self
 		self:zoomto(wodth, 2):diffusealpha(1):valign(1):diffuse(color(".75,0,0,0.75")):halign(0)
 	end
 }
@@ -147,7 +157,7 @@ t[#t + 1] =
 	{
 		Name = "npstext",
 		InitCommand = function(self)
-			npstext = self
+			npstextActor = self
 			self:halign(0)
 			self:zoom(0.4)
 			self:settext(""):diffuse(color("1,0,0"))

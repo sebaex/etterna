@@ -5,16 +5,21 @@ local function highlight(self)
 end
 
 local function highlightIfOver(self)
-	if isOver(self) then
-		self:diffusealpha(0.75)
-	else
-		self:diffusealpha(0.5)
+	local isOver = isOver(self)
+	if isOver ~= self.wasOver then
+		if isOver then
+			self:diffusealpha(0.75)
+		else
+			self:diffusealpha(0.5)
+		end
 	end
 end
 
-t = Def.ActorFrame {
-	InitCommand=function(self)
+t =
+	Def.ActorFrame {
+	InitCommand = function(self)
 		self:SetUpdateFunction(highlight)
+		self:SetUpdateFunctionInterval(1 / 30)
 	end
 }
 
@@ -30,7 +35,7 @@ t[#t + 1] =
 	InitCommand = function(self)
 		self:zoomto(54, 20):diffuse(color("#ffffff")):diffusealpha(0.5):halign(0)
 	end,
-	HighlightCommand=function(self)
+	HighlightCommand = function(self)
 		highlightIfOver(self)
 	end,
 	MouseLeftClickMessageCommand = function(self)

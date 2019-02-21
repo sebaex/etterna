@@ -46,11 +46,15 @@ local function highlight(self)
 end
 
 local function highlightIfOver(self)
-	if isOver(self) then
-		self:diffusealpha(0.6)
-	else
-		self:diffusealpha(1)
+	local isOver = isOver(self)
+	if isOver ~= self.wasOver then
+		if isOver then
+			self:diffusealpha(0.6)
+		else
+			self:diffusealpha(1)
+		end
 	end
+	self.wasOver = isOver
 end
 
 local function byAchieved(scoregoal)
@@ -69,6 +73,7 @@ local o =
 		cheese = self
 		self:xy(0, 0)
 		self:SetUpdateFunction(highlight)
+		self:SetUpdateFunctionInterval(1 / 30)
 	end,
 	BeginCommand = function(self)
 		SCREENMAN:GetTopScreen():AddInputCallback(input)
@@ -131,16 +136,21 @@ local o =
 			--priority
 			InitCommand = function(self)
 				self:xy(c0x + 10, headeroff):zoom(tzoom):halign(0.5)
+				self.wasOver = true
 			end,
 			UpdateCommand = function(self)
 				self:settext("P")
 			end,
 			HighlightCommand = function(self)
-				if isOver(self) then
-					self:settext("Priority"):diffusealpha(0.6)
-				else
-					self:settext("P"):diffusealpha(1)
+				local isOver = isOver(self)
+				if isOver ~= self.wasOver then
+					if isOver then
+						self:settext("Priority"):diffusealpha(0.6)
+					else
+						self:settext("P"):diffusealpha(1)
+					end
 				end
+				self.wasOver = isOver
 			end,
 			MouseLeftClickMessageCommand = function(self)
 				if isOver(self) then
@@ -155,16 +165,21 @@ local o =
 			--rate
 			InitCommand = function(self)
 				self:xy(c1x + 25, headeroff):zoom(tzoom):halign(0.5)
+				self.wasOver = true
 			end,
 			UpdateCommand = function(self)
 				self:settext("R")
 			end,
 			HighlightCommand = function(self)
-				if isOver(self) then
-					self:settext("Rate"):diffusealpha(0.6)
-				else
-					self:settext("R"):diffusealpha(1)
+				local isOver = isOver(self)
+				if isOver ~= self.wasOver then
+					if isOver then
+						self:settext("Rate"):diffusealpha(0.6)
+					else
+						self:settext("R"):diffusealpha(1)
+					end
 				end
+				self.wasOver = isOver
 			end,
 			MouseLeftClickMessageCommand = function(self)
 				if isOver(self) then
