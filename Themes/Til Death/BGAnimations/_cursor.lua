@@ -50,16 +50,30 @@ do
 	end
 end
 local cursorActor
+local lastUpdateWindowedStatus = false
+-- Update less often if not windowed
+local updateIntervalInvisible = 5
+local updateIntervalVisible = 1/20
 local function Update(self)
 	--self:GetChild("MouseXY"):settextf("X:%5.2f Y:%5.2f W:%5.2f",INPUTFILTER:GetMouseX(),INPUTFILTER:GetMouseY(),INPUTFILTER:GetMouseWheel())
-
-	cursorActor:xy(INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY())
+	local isWindowed = IsWindowed()
+	if lastUpdateWindowedStatus ~= isWindowed then
+		lastUpdateWindowedStatus = isWindowed
+		if not isWindowed then
+			self:SetUpdateFunctionInterval(updateIntervalVisible)
+			cursorActor:visible(true)
+		else
+			self:SetUpdateFunctionInterval(updateIntervalInvisible)
+			cursorActor:visible(false)
+		end
+	end
+	cursorActor:xy(INPUTFILTER:GetMouseX(), INPUTFILTER:GetMouseY()):visible()
 	--self:GetChild("FullScreen"):settextf("FullScreen: %s",tostring(not PREFSMAN:GetPreference("Windowed")))
 end
 t.BeginCommand = function(self)
 	cursorActor = self:GetChild("Cursor")
 	self:SetUpdateFunction(Update)
-	self:SetUpdateFunctionInterval(1 / 20)
+	self:SetUpdateFunctionInterval(updateIntervalVisible)
 end
 
 return t
