@@ -928,7 +928,7 @@ DownloadManager::UploadScore(HighScore* hs)
 	auto done = [hs](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("errors")) {
@@ -1014,7 +1014,7 @@ DownloadManager::UploadScoreWithReplayData(HighScore* hs)
 		curl_easy_getinfo(req.handle, CURLINFO_RESPONSE_CODE, &response_code);
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("errors")) {
@@ -1135,7 +1135,7 @@ DownloadManager::UploadScoreWithReplayDataFromDisk(const string& sk,
 		curl_easy_getinfo(req.handle, CURLINFO_RESPONSE_CODE, &response_code);
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("errors")) {
@@ -1233,7 +1233,7 @@ DownloadManager::UpdateOnlineScoreReplayData(const string& sk,
 		curl_easy_getinfo(req.handle, CURLINFO_RESPONSE_CODE, &response_code);
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (!d.HasMember("errors")) {
@@ -1386,7 +1386,7 @@ DownloadManager::RefreshUserRank()
 	auto done = [](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("errors") && d["errors"].IsObject() &&
@@ -1466,7 +1466,7 @@ DownloadManager::SendRequestToURL(
 															  CURLMsg* msg) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("errors")) {
@@ -1538,7 +1538,7 @@ DownloadManager::RefreshCountryCodes()
 	auto done = [](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		if (d.HasMember("data") && d["data"].IsArray())
@@ -1687,7 +1687,7 @@ DownloadManager::RequestChartLeaderBoard(const string& chartkey,
 	auto done = [chartkey, ref](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 		vector<OnlineScore>& vec = DLMAN->chartLeaderboards[chartkey];
@@ -1933,7 +1933,7 @@ DownloadManager::RefreshCoreBundles()
 	auto done = [](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 
@@ -1995,7 +1995,7 @@ DownloadManager::RefreshLastVersion()
 	auto done = [this](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 
@@ -2021,7 +2021,7 @@ DownloadManager::RefreshRegisterPage()
 	auto done = [this](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 
@@ -2128,7 +2128,7 @@ DownloadManager::RefreshUserData()
 	auto done = [](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 
@@ -2214,7 +2214,7 @@ DownloadManager::StartSession(string user,
 	auto done = [user, pass, callback](HTTPRequest& req, CURLMsg*) {
 		Document d;
 		if (d.Parse(req.result.c_str()).HasParseError()) {
-			LOG->Trace(("Malformed request response: " + req.result).c_str());
+			LOG->Write(0, ("Malformed request response: " + req.result).c_str());
 			return;
 		}
 
